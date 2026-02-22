@@ -4,6 +4,10 @@
     "email-send": {
       "version": "1.0.0",
       "installedAt": 1771578917659
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1771766635015
     }
   }
 }

@@ -1,0 +1,8 @@
+TAVILY API KEY：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
+
+注意：此 API KEY 用于 Tavily 搜索服务，用于 web_search 工具调用。
+
+使用场景：
+- 网络搜索功能
+- 内容提取服务
+- AI 驱动的搜索查询
