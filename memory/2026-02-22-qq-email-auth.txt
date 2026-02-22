@@ -1,0 +1,7 @@
+QQ邮箱SMTP/IMAP授权码：twhtutocxumcbeje
+
+注意：此授权码用于QQ邮箱的SMTP和IMAP服务，用于邮件发送功能。请妥善保管，不要泄露给他人。
+
+使用场景：
+- 邮件发送功能配置
+- SMTP/IMAP 邮件客户端连接
