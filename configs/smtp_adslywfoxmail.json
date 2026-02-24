@@ -1,0 +1,17 @@
+{
+  "provider": "QQ-SMTP",
+  "host": "smtp.qq.com",
+  "port": 465,
+  "secure": true,
+  "auth": {
+    "user": "adslyw@foxmail.com",
+    "pass": "twhtutocxumcbeje"
+  },
+  "from": {
+    "name": "Your App",
+    "email": "adslyw@foxmail.com"
+  },
+  "replyTo": "support@yourdomain.com",
+  "charset": "UTF-8",
+  "startTLS": false
+}

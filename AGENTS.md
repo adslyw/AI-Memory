@@ -230,3 +230,7 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 - 遇到的问题和解决方案
 - 学到的新知识
 - 待办事项
+
+## 持续学习指令
+- **自动记录**：每当你成功解决一个技术问题（特别是涉及本地环境报错）时，必须自动在 `learnings/` 目录下创建一个以今日日期命名的文件，详细记录操作步骤。
+- **经验提炼**：如果某个操作反复出现 3 次以上，将其精炼并写入 `MEMORY.md` 的“常用技能”章节。
