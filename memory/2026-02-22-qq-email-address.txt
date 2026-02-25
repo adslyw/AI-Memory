@@ -4,4 +4,4 @@ QQ邮箱地址：adslyw@foxmail.com
 
 相关信息：
 - 邮箱类型：QQ邮箱（foxmail域名）
-- 授权码：twhtutocxumcbeje（已记录在另一份文件中）
+- 授权码：***（SMTP/IMAP 专用密码 需要再次询问）

@@ -90,7 +90,7 @@ registry=http://registry.npmjs.org/
 
 ### 邮箱信息
 - **邮箱地址**：adslyw@foxmail.com（QQ邮箱）
-- **授权码**：twhtutocxumcbeje（SMTP/IMAP 专用密码）
+- **授权码**：***（SMTP/IMAP 专用密码）
 - **SMTP 服务器**：smtp.qq.com
 - **端口**：465（SSL）
 
