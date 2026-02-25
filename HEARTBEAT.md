@@ -6,7 +6,7 @@
 # 任务列表
 - [ ] 检查今日 `memory/` 目录。
 - [ ] 如果有新日志，运行 `qmd index` 更新索引。
-- [ ] 执行 `git add . && git commit -m 'Auto-sync memory'` 同步记忆。
+- [ ] 执行 `git add . && git commit -m 'Auto-sync memory' && git push origin main` 同步记忆。
 
 ### 每日自省任务
 1. 阅读最近 3 天的 `memory/` 日志。
