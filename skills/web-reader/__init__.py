@@ -17,9 +17,7 @@ def web_reader(url: Annotated[str, "需要提取正文的网页链接"]):
         if not result:
             return "错误：未能从该网页提取到有效正文内容。"
         
-        # 截断处理：防止正文太长再次导致 422 报错
-        # 针对 8GB 内存的 Qwen-3B，建议保留前 3000 字
-        return result[:3000] + "\n\n(已截取前 3000 字以节省内存)"
+        return result
     except requests.exceptions.RequestException as e:
         return f"网络请求错误: {str(e)}"
     except Exception as e:
