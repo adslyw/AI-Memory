@@ -38,3 +38,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+### AI Skills
+
+- **web-search**: Use `inference.sh` CLI for web search and content extraction.
+  - **Tavily Search**: `infsh app run tavily/search-assistant --input '{"query": "latest AI developments 2024"}'`
+  - **Tavily Extract**: `infsh app run tavily/extract --input '{"urls": ["https://example.com/article1"]}'`
+  - **Exa Search**: `infsh app run exa/search --input '{"query": "machine learning frameworks comparison"}'`
+  - **Exa Answer**: `infsh app run exa/answer --input '{"question": "What is the population of Tokyo?"}'`
+  - **Exa Extract**: `infsh app run exa/extract --input '{"url": "https://example.com/research-paper"}'`
+

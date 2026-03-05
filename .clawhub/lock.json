@@ -8,6 +8,10 @@
     "tavily-search": {
       "version": "1.0.0",
       "installedAt": 1771766635015
+    },
+    "self-improving-agent": {
+      "version": "1.0.11",
+      "installedAt": 1772545382535
     }
   }
 }
