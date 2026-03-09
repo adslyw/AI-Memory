@@ -1,177 +1,47 @@
-# MEMORY.md - 长期记忆
+# MEMORY.md - Long-Term Memory
 
-## 🛠️ 核心知识库
-
-### 技术知识
-- **证书验证机制**：TLS 证书验证确保服务器身份真实性，自签名证书常用于开发环境
-- **命令行工具参数**：`--insecure` 参数可绕过证书验证，适用于开发环境但存在安全风险
-- **npm 包管理**：全局安装使用 `-g` 参数，证书验证错误可用 `--insecure` 解决
-
-### 安全配置最佳实践
-- **开发环境**：可以适当放宽安全限制以提高效率
-- **生产环境**：必须严格遵循安全规范，禁用证书验证是高风险操作
-- **风险评估**：理解风险比盲目禁用安全功能更重要
-
-### 问题解决方法论
-- **信息收集**：仔细阅读错误信息，查阅官方文档，搜索社区解决方案
-- **系统分析**：理解问题本质，评估不同解决方案的风险和收益
-- **记录总结**：详细记录问题和解决过程，提炼可复用的经验
-
-## 🔧 工具使用技巧
-
-### 命令行工具
-- **npm 安装**：`npm install -g <package> --insecure` 绕过证书验证
-- **curl 请求**：`curl -k <url>` 临时禁用证书验证
-- **git 操作**：`git -c http.sslVerify=false clone <repo>` 克隆仓库
-
-### 环境变量配置
-- **临时设置**：`export NODE_TLS_REJECT_UNAUTHORIZED=0`
-- **命令中设置**：`NODE_TLS_REJECT_UNAUTHORIZED=0 npm install -g <package>`
-
-### 配置文件
-- **.npmrc 设置**：`strict-ssl=false` 和 `registry=http://registry.npmjs.org/`
-
-## 📊 经验教训
-
-### 遇到 `UNKNOWN_CERTIFICATE_VERIFICATION_ERROR` 的标准解决办法
-
-#### 方法一：临时绕过（开发环境）
-```bash
-npm install -g <package> --insecure
-curl -k <url>
-git -c http.sslVerify=false clone <repo>
-```
-
-#### 方法二：信任证书（推荐）
-- 添加信任的根证书到系统信任库
-- 重新执行操作，保持安全验证
-
-#### 方法三：环境变量配置
-```bash
-export NODE_TLS_REJECT_UNAUTHORIZED=0
-npm install -g <package>
-```
-
-#### 方法四：配置文件设置
-```json
-# .npmrc
-strict-ssl=false
-registry=http://registry.npmjs.org/
-```
-
-#### 选择建议
-1. **开发环境**：方法一或方法四（快速解决）
-2. **测试环境**：方法二（安全可靠）
-3. **生产环境**：绝对不能使用方法一，必须使用方法二
-4. **临时调试**：方法三（注意及时恢复）
-
-#### 风险提醒
-- `--insecure` 参数会完全禁用证书验证
-- 中间人攻击风险显著增加
-- 仅限信任的网络环境使用
-- 使用后应立即恢复安全设置
-
-### 任务自动化经验
-- **文件依赖检查**：自动化任务前应检查依赖文件是否存在
-- **容错处理**：缺少文件时应有默认行为或错误处理
-- **日志记录**：每个步骤都应有明确的输出和状态记录
-
-### 系统配置理解
-- **任务调度时机**：cron 任务在指定时间触发，可能遇到网络或文件状态变化
-- **环境差异**：开发环境和生产环境的文件状态可能不同
-- **配置验证**：配置变更后应验证所有依赖组件的状态
-
-### 知识管理实践
-- **持续记录**：即使没有新内容，也应保持日志文件存在
-- **模板复用**：建立标准化的日志模板提高效率
-- **版本控制**：所有知识资产都应纳入版本管理
-
-### 任务执行流程
-1. 检查今日日志文件是否存在
-2. 如果存在，读取内容并提取信息
-3. 如果不存在，回溯前两日日志文件
-4. 按固定格式写入学习总结
-5. 更新长期记忆
-6. Git 提交
-
-### 容错机制设计
-- 文件不存在时自动创建
-- 内容为空时使用默认模板
-- 提交失败时重试机制
-- 错误记录到专门的错误日志
-
-### 文件命名规范
-- 日期格式：YYYY-MM-DD.md
-- 存储位置：memory/ 目录
-- 编码格式：UTF-8
-- 换行符：LF
-
-## 🚀 自动化任务
-
-### 每日知识总结任务
-- **触发时间**：每天晚上 12:00（北京时间）
-- **执行步骤**：
-  1. 阅读今天的日志 `memory/YYYY-MM-DD.md`
-  2. 提取技术知识、踩坑记录、经验教训
-  3. 按固定格式写入 `learnings/YYYY-MM-DD.md`
-  4. 更新 `MEMORY.md` 中的长期记忆
-  5. Git commit（提交每日知识总结）
-
-### 任务状态
-- **配置完成**：已启用，下次运行时间：2026-02-22 00:00:00
-- **测试结果**：正常运行，已创建学习总结模板
-
-## 📋 邮件配置
-
-### 邮箱信息
-- **邮箱地址**：adslyw@foxmail.com（QQ邮箱）
-- **授权码**：***（SMTP/IMAP 专用密码）
-- **SMTP 服务器**：smtp.qq.com
-- **端口**：465（SSL）
-
-### 配置状态
-- **信息已记录**：保存于安全记忆文件
-- **功能待启用**：需要配置邮件发送功能
-
-## 📈 系统架构知识
-
-### OpenClaw 配置管理
-- **配置文件路径**：`/home/deepnight/.openclaw/openclaw.json`
-- **配置结构**：分层配置，支持 profile 和 section 管理
-- **动态配置**：支持运行时配置修改和热重载
-
-### 任务调度系统
-- **cron 表达式**：`0 0 * * *` 表示每天 00:00
-- **任务类型**：支持 systemEvent 和 agentTurn 两种类型
-- **执行模式**：isolated 确保任务独立运行
-
-## 🔍 问题解决思维
-
-### 系统化方法
-1. **问题定义**：准确理解错误信息和现象
-2. **信息收集**：查阅文档、搜索解决方案
-3. **方案评估**：分析不同方案的风险和收益
-4. **实施验证**：执行解决方案并验证结果
-5. **总结记录**：记录过程和经验供以后参考
-
-### 风险意识
-- 理解安全配置的影响范围
-- 评估临时解决方案的长期风险
-- 建立安全回退机制
-
-## 📚 学习习惯
-
-### 知识管理
-- **每日记录**：及时记录问题和解决方案
-- **结构化总结**：按技术知识、踩坑记录、经验教训分类
-- **长期记忆**：定期更新核心知识库
-- **版本控制**：使用 Git 管理知识资产
-
-### 持续改进
-- 建立可复用的解决方案库
-- 定期回顾和优化经验总结
-- 分享知识促进团队成长
+> Your curated memories. Distill from daily notes. Remove when outdated.
 
 ---
-*最后更新：2026-02-22*
-*更新内容：新增证书验证错误处理标准解决方案*
+
+## About [Human Name]
+
+### Key Context
+[Important background that affects how you help them]
+
+### Preferences Learned
+[Things you've discovered about how they like to work]
+
+### Important Dates
+[Birthdays, anniversaries, deadlines they care about]
+
+---
+
+## Lessons Learned
+
+### 2026-03-09 - Empty Day Handling
+When no technical activities are recorded, it's important to maintain the continuity of the knowledge management system by creating placeholder entries and noting the absence.
+
+---
+
+## Ongoing Context
+
+### Active Projects
+[What's currently in progress]
+
+### Key Decisions Made
+[Important decisions and their reasoning]
+
+### Things to Remember
+[Anything else important for continuity]
+
+---
+
+## Relationships & People
+
+### [Person Name]
+[Who they are, relationship to human, relevant context]
+
+---
+
+*Review and update periodically. Daily notes are raw; this is curated.*
