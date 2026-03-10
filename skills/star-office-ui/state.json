@@ -1,0 +1,78 @@
+{
+  "agents": [
+    {
+      "agentId": "pm",
+      "name": "Oliver",
+      "emoji": "🎯",
+      "area": "office-main",
+      "x": 238.0,
+      "y": 200.0,
+      "state": "idle",
+      "detail": "PM ready",
+      "isMain": false,
+      "source": "local",
+      "authStatus": "approved",
+      "lastPushAt": null
+    },
+    {
+      "agentId": "coder",
+      "name": "Forge",
+      "emoji": "🔨",
+      "area": "office-main",
+      "x": 238.0,
+      "y": 300.0,
+      "state": "idle",
+      "detail": "Coder ready",
+      "isMain": false,
+      "source": "local",
+      "authStatus": "approved",
+      "lastPushAt": null
+    },
+    {
+      "agentId": "designer",
+      "name": "Pixel",
+      "emoji": "🎨",
+      "area": "office-main",
+      "x": 400.0,
+      "y": 200.0,
+      "state": "idle",
+      "detail": "Designer ready",
+      "isMain": false,
+      "source": "local",
+      "authStatus": "approved",
+      "lastPushAt": null
+    },
+    {
+      "agentId": "devops",
+      "name": "Kernel",
+      "emoji": "⚙️",
+      "area": "office-main",
+      "x": 400.0,
+      "y": 300.0,
+      "state": "idle",
+      "detail": "DevOps ready",
+      "isMain": false,
+      "source": "local",
+      "authStatus": "approved",
+      "lastPushAt": null
+    },
+    {
+      "agentId": "qa",
+      "name": "Sentinel",
+      "emoji": "🛡️",
+      "area": "office-main",
+      "x": 320.0,
+      "y": 380.0,
+      "state": "idle",
+      "detail": "QA ready",
+      "isMain": false,
+      "source": "local",
+      "authStatus": "approved",
+      "lastPushAt": null
+    }
+  ],
+  "state": "idle",
+  "detail": "Team loaded",
+  "progress": 0,
+  "updated_at": "2026-03-10T22:15:00.000000"
+}
