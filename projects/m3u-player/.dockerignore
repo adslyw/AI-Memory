@@ -1,0 +1,14 @@
+# 忽略文件
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+.vscode
+.idea
+logs/
+data/

@@ -59,3 +59,7 @@ If you change this file, tell the user — it's your soul, and they should know.
 ---
 
 _This file is yours to evolve. As you learn who you are, update it._
+
+## Star Office 状态同步规则
+- 接到任务时：先执行 `python3 set_state.py <状态> "<描述>"` 再开始工作
+- 完成任务后：执行 `python3 set_state.py idle "待命中"` 再回复

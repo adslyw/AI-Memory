@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3U Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        /* 原始简洁风格 - 标准 Tailwind */
+        :root {
+            --sidebar-width: 420px;
+            --sidebar-collapsed: 125px;
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* 视频容器自适应 */
+        #video-container {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            background: #000;
+        }
+        #video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            object-fit: contain;
+        }
+
+        /* 侧边栏默认宽度和收起状态 */
+        #sidebar {
+            width: var(--sidebar-width);
+        }
+        
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+        
+        /* 收起状态下隐藏文字但保留海报 */
+        #sidebar.collapsed .sidebar-text,
+        #sidebar.collapsed .delete-btn,
+        #sidebar.collapsed .refresh-btn,
+        #sidebar.collapsed .group-header .font-medium {
+            display: none;
+        }
+        
+        /* 收起状态下通道项只显示海报 */
+        #sidebar.collapsed .channel-item {
+            justify-content: center;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        
+        #sidebar.collapsed .channel-item .flex-1 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 h-screen overflow-hidden">
+    <div class="flex h-full">
+        <!-- 左侧：频道列表 -->
+        <aside id="sidebar" class="bg-white flex flex-col border-r border-gray-200 transition-all duration-300">
+            <!-- 标题栏 -->
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2 min-w-0">
+                    <button id="toggle-sidebar" class="text-blue-600 hover:text-blue-800 transition p-1" title="收起/展开">
+                        ◀
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800 truncate">📺 M3U Player</h1>
+                </div>
+                <button id="toggle-theme" class="text-blue-600 hover:text-blue-800 transition flex-shrink-0">🌙</button>
+            </div>
+
+            <!-- 添加按钮 -->
+            <div class="px-4 py-3 border-b border-gray-200">
+                <button id="add-channel-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition">
+                    <span>+</span> <span class="sidebar-text">添加频道</span>
+                </button>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="px-3 py-2 border-b border-gray-200">
+                <input type="text" id="search-input" 
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="🔍 搜索频道...">
+            </div>
+
+            <!-- 导入按钮（仅在有旧数据时显示） -->
+            <div id="import-banner" class="hidden px-3 py-2 bg-yellow-50 border-b border-yellow-200 text-sm">
+                <span class="text-yellow-700">检测到旧数据</span>
+                <button id="import-btn" class="ml-2 text-blue-600 hover:underline">导入</button>
+            </div>
+
+            <!-- 频道列表 -->
+            <div id="channel-list" class="flex-1 overflow-y-auto custom-scroll p-2 space-y-1">
+                <!-- 频道项将动态插入这里 -->
+            </div>
+
+            <!-- 统计信息 -->
+            <div class="p-3 border-t border-gray-200 text-sm text-blue-600 text-center sidebar-text">
+                <span id="channel-count">0</span> 个频道
+            </div>
+        </aside>
+
+        <!-- 右侧：播放区域 -->
+        <main class="flex-1 flex flex-col bg-black relative">
+            <!-- 播放器 -->
+            <div id="video-container" class="flex-1">
+                <video id="video" controls crossorigin="anonymous" class="w-full h-full object-contain"></video>
+            </div>
+        </main>
+    </div>
+
+    <!-- 添加频道模态框 -->
+    <div id="add-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-lg">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">添加新频道</h3>
+            <form id="add-channel-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">频道名称</label>
+                    <input type="text" id="channel-name" required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="例如：CCTV-1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">M3U8 链接</label>
+                    <textarea id="channel-url" required rows="3"
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="https://example.com/stream.m3u8"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">海报图片 URL（可选）</label>
+                    <input type="url" id="channel-poster"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="https://example.com/poster.jpg">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition font-medium">
+                        保存
+                    </button>
+                    <button type="button" id="cancel-add" class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg transition">
+                        取消
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

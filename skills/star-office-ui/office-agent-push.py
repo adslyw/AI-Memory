@@ -2,11 +2,7 @@
 """
 海辛办公室 - Agent 状态主动推送脚本
 
-用法：
-1. 填入下面的 JOIN_KEY（你从海辛那里拿到的一次性 join key）
-2. 填入 AGENT_NAME（你想要在办公室里显示的名字）
-3. 运行：python office-agent-push.py
-4. 脚本会自动先 join（首次运行），然后每 30s 向海辛办公室推送一次你的当前状态
+自动从 star-office-sync.json 读取配置（推荐），或手动填入下方常量。
 """
 
 import json
@@ -15,10 +11,33 @@ import time
 import sys
 from datetime import datetime
 
-# === 你需要填入的信息 ===
-JOIN_KEY = ""   # 必填：你的一次性 join key
-AGENT_NAME = "" # 必填：你在办公室里的名字
-OFFICE_URL = "https://office.example.com"  # 海辛办公室地址（一般不用改）
+# === 自动读取配置文件 ===
+# 查找工作区中的 star-office-sync.json
+WORKSPACE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+SYNC_CONFIG_PATH = os.path.join(WORKSPACE, "star-office-sync.json")
+
+if os.path.exists(SYNC_CONFIG_PATH):
+    try:
+        with open(SYNC_CONFIG_PATH, "r", encoding="utf-8") as f:
+            SYNC_CFG = json.load(f)
+        JOIN_KEY = SYNC_CFG.get("joinKey", "")
+        AGENT_ID = SYNC_CFG.get("agentId", "main")
+        AGENT_NAME = SYNC_CFG.get("agentName", "DeepBlue")
+        OFFICE_URL = SYNC_CFG.get("endpoint", "http://127.0.0.1:19500").rstrip("/agent-push")
+        AUTO_CONFIG = True
+    except Exception:
+        AUTO_CONFIG = False
+        JOIN_KEY = ""
+        AGENT_ID = "main"
+        AGENT_NAME = "DeepBlue"
+        OFFICE_URL = "http://127.0.0.1:19500"
+else:
+    AUTO_CONFIG = False
+    # === 手动配置（如果不使用配置文件）===
+    JOIN_KEY = ""   # 你的一次性 join key
+    AGENT_ID = "main"  # agentId
+    AGENT_NAME = "DeepBlue"  # 你在办公室里的名字
+    OFFICE_URL = "http://127.0.0.1:19500"  # 办公室地址（不含 /agent-push）
 
 # === 推送配置 ===
 PUSH_INTERVAL_SECONDS = 15  # 每隔多少秒推送一次（更实时）
@@ -220,11 +239,10 @@ def do_push(local, status_data):
 
 def main():
     local = load_local_state()
-
-    # 先确认配置是否齐全
-    if not JOIN_KEY or not AGENT_NAME:
-        print("❌ 请先在脚本开头填入 JOIN_KEY 和 AGENT_NAME")
-        sys.exit(1)
+    # Config auto-loaded from star-office-sync.json; skip manual check
+    # if not JOIN_KEY or not AGENT_NAME:
+    #     print("❌ 请先在脚本开头填入 JOIN_KEY 和 AGENT_NAME")
+    #     sys.exit(1)
 
     # 如果之前没 join，先 join
     if not local.get("joined") or not local.get("agentId"):

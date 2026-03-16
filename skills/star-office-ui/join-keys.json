@@ -25,9 +25,9 @@
       "name": "团队成员 03",
       "maxConcurrent": 3,
       "used": true,
-      "usedBy": "Oliver (PM)",
-      "usedByAgentId": "pm",
-      "usedAt": "2026-03-10T22:50:00.000000",
+      "usedBy": "Oliver",
+      "usedByAgentId": "agent_1773378907309_pcb5",
+      "usedAt": "2026-03-13T13:21:35.207531",
       "reusable": true
     },
     {
@@ -35,9 +35,9 @@
       "name": "团队成员 04",
       "maxConcurrent": 3,
       "used": true,
-      "usedBy": "Forge (Coder)",
-      "usedByAgentId": "coder",
-      "usedAt": "2026-03-10T22:50:00.000000",
+      "usedBy": "Forge",
+      "usedByAgentId": "agent_1773378880616_y17n",
+      "usedAt": "2026-03-13T13:21:35.162757",
       "reusable": true
     },
     {
@@ -45,9 +45,9 @@
       "name": "团队成员 05",
       "maxConcurrent": 3,
       "used": true,
-      "usedBy": "Pixel (Designer)",
-      "usedByAgentId": "designer",
-      "usedAt": "2026-03-10T22:50:00.000000",
+      "usedBy": "Pixel",
+      "usedByAgentId": "agent_1773378907331_zigo",
+      "usedAt": "2026-03-13T13:21:35.174653",
       "reusable": true
     },
     {
@@ -55,9 +55,9 @@
       "name": "团队成员 06",
       "maxConcurrent": 3,
       "used": true,
-      "usedBy": "Kernel (DevOps)",
-      "usedByAgentId": "devops",
-      "usedAt": "2026-03-10T22:50:00.000000",
+      "usedBy": "Kernel",
+      "usedByAgentId": "agent_1773378907353_6ep1",
+      "usedAt": "2026-03-13T13:21:29.439124",
       "reusable": true
     },
     {
@@ -65,15 +65,20 @@
       "name": "团队成员 07",
       "maxConcurrent": 3,
       "used": true,
-      "usedBy": "Sentinel (QA)",
-      "usedByAgentId": "qa",
-      "usedAt": "2026-03-10T22:50:00.000000",
+      "usedBy": "Sentinel",
+      "usedByAgentId": "agent_1773378907376_p8su",
+      "usedAt": "2026-03-13T13:21:35.185365",
       "reusable": true
     },
     {
       "key": "ocj_starteam08",
       "name": "团队成员 08",
-      "maxConcurrent": 3
+      "maxConcurrent": 3,
+      "used": true,
+      "usedBy": "DeepBlue",
+      "usedByAgentId": "agent_1773466370518_cflv",
+      "usedAt": "2026-03-14T17:02:45.145062",
+      "reusable": true
     }
   ]
 }

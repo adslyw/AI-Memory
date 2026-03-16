@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>M3U Player - 数据迁移</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-lg w-full mx-4">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">📦 数据迁移工具</h1>
+        <p class="text-gray-600 mb-6">将 localStorage 中的频道数据迁移到 SQLite</p>
+        
+        <div id="status" class="mb-4 p-4 rounded-lg bg-blue-50 text-blue-700">
+            正在检测数据...
+        </div>
+
+        <div id="data-preview" class="hidden mb-4">
+            <p class="text-sm text-gray-600 mb-2">检测到以下数据：</p>
+            <div id="preview-content" class="bg-gray-50 rounded p-3 text-sm max-h-40 overflow-auto"></div>
+        </div>
+
+        <div class="flex gap-3">
+            <button id="migrate-btn" onclick="migrateData()" 
+                    class="hidden flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition font-medium">
+                🚀 迁移到 SQLite
+            </button>
+            <button onclick="exportData()" 
+                    class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-lg transition">
+                📋 导出 JSON
+            </button>
+        </div>
+
+        <div id="result" class="hidden mt-4 p-4 rounded-lg"></div>
+        
+        <div class="mt-6 text-sm text-gray-500">
+            <p><strong>使用方法：</strong></p>
+            <ol class="list-decimal ml-4 mt-2 space-y-1">
+                <li>在旧地址 (localhost:8080) 打开此页面</li>
+                <li>点击「迁移到 SQLite」按钮</li>
+                <li>或点击「导出 JSON」复制数据，在新页面导入</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const NEW_API = 'http://localhost:3456/api';
+        let oldData = null;
+
+        // 检测 localStorage 数据
+        function detectData() {
+            const saved = localStorage.getItem('m3u_channels');
+            if (saved) {
+                try {
+                    oldData = JSON.parse(saved);
+                    const m3uCount = oldData.filter(c => c.isM3U).length;
+                    const channelCount = oldData.filter(c => !c.isM3U).length;
+                    
+                    document.getElementById('status').className = 'mb-4 p-4 rounded-lg bg-green-50 text-green-700';
+                    document.getElementById('status').innerHTML = `✅ 检测到数据！`;
+                    
+                    document.getElementById('preview-content').innerHTML = `
+                        <p>📁 M3U 分组: ${m3uCount} 个</p>
+                        <p>📺 普通频道: ${channelCount} 个</p>
+                        <p>📊 总计: ${oldData.length} 项</p>
+                    `;
+                    document.getElementById('data-preview').classList.remove('hidden');
+                    document.getElementById('migrate-btn').classList.remove('hidden');
+                } catch (e) {
+                    showError('数据解析失败: ' + e.message);
+                }
+            } else {
+                document.getElementById('status').className = 'mb-4 p-4 rounded-lg bg-yellow-50 text-yellow-700';
+                document.getElementById('status').innerHTML = '⚠️ 未检测到 localStorage 数据';
+            }
+        }
+
+        // 迁移到 SQLite
+        async function migrateData() {
+            if (!oldData) return;
+            
+            const btn = document.getElementById('migrate-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ 迁移中...';
+
+            try {
+                const res = await fetch(`${NEW_API}/sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ channels: oldData })
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const result = await res.json();
+
+                showResult('success', `✅ 迁移成功！${oldData.length} 项已同步到 SQLite<br><a href="http://localhost:3456" class="underline">点击访问新页面 →</a>`);
+            } catch (e) {
+                showResult('error', `❌ 迁移失败: ${e.message}<br>请确保新服务 (localhost:3456) 已启动`);
+                btn.disabled = false;
+                btn.textContent = '🚀 迁移到 SQLite';
+            }
+        }
+
+        // 导出 JSON
+        function exportData() {
+            if (!oldData) {
+                alert('没有数据可导出');
+                return;
+            }
+            const json = JSON.stringify(oldData, null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                showResult('success', '✅ 数据已复制到剪贴板！在新页面点击「导入」粘贴即可');
+            }).catch(() => {
+                // 回退：显示文本框让用户手动复制
+                const ta = document.createElement('textarea');
+                ta.value = json;
+                ta.className = 'w-full h-40 mt-2 p-2 border rounded text-xs';
+                document.getElementById('result').appendChild(ta);
+                showResult('info', '📋 请手动复制下方数据：');
+            });
+        }
+
+        function showResult(type, html) {
+            const el = document.getElementById('result');
+            el.classList.remove('hidden');
+            el.className = `mt-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-50 text-green-700' : type === 'error' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'}`;
+            el.innerHTML = html;
+        }
+
+        function showError(msg) {
+            document.getElementById('status').className = 'mb-4 p-4 rounded-lg bg-red-50 text-red-700';
+            document.getElementById('status').innerHTML = '❌ ' + msg;
+        }
+
+        // 启动检测
+        detectData();
+    </script>
+</body>
+</html>

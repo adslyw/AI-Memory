@@ -153,16 +153,7 @@
   - QA Sentinel 15:15 启动 E2E 测试
   - **关键教训:** 必须建立自动故障转移机制，agent 在紧急情况下有权绕过沟通阻塞直接恢复服务
 
-### 2026-03-14 - Star Office Integration Fix
-- **问题:** 重启 gateway 后办公室看板主 agent 下线
-- **根因:** `star-office-sync.json` 配置错误 - 使用了 PM 的 `agentId` 和 `joinKey`
-- **解决:**
-  1. 修正配置: `agentId="main"`, `joinKey="ocj_starteam08"`, `agentName="DeepBlue"`
-  2. 改进 `office-agent-push.py` 支持自动读取配置文件
-  3. 重启 Star Office 后端
-  4. 启动主 agent 推送进程
-- **结果:** 主 agent DeepBlue 成功加入办公室，所有 7 个 agent 在线（包括 Star 主角色）
-- **验证:** `/agents` API 返回完整列表，DeepBlue 状态 idle → breakroom
+### 2026-03-14 - Project Termination & Emergency Response
 - **触发:** Owner 指令 - Option 4 (Project Termination)
 - **时间:** 2026-03-13 21:20-23:53 CST
 - **背景:** Day 4 交付遇到 E2E 测试持续失败 (仅 1/11 passed)，测试隔离和空状态问题未解决
@@ -192,8 +183,6 @@
   - **自动故障转移权责明确:** 主 agent 在团队无响应时有权直接执行恢复，无需等待确认
   - **生产配置与代码必须同步验证:** 添加 pre-deploy 检查步骤，防止配置代码不匹配
 
----
-
 ### 2026-03-14 - Star Office Integration Fix
 - **问题:** 重启 gateway 后办公室看板主 agent 下线
 - **根因:** `star-office-sync.json` 配置错误 - 使用了 PM 的 `agentId` 和 `joinKey`
@@ -205,96 +194,30 @@
 - **结果:** 主 agent DeepBlue 成功加入办公室，所有 7 个 agent 在线（包括 Star 主角色）
 - **验证:** `/agents` API 返回完整列表，DeepBlue 状态 idle → breakroom
 
----
-
-## Ongoing Context
-
-### Active Projects
-
-*No active projects as of 2026-03-13. All tasks completed or terminated.*
-
-### Archived Projects
-
-#### 待办事项 Web 应用 (React + Node.js) - TERMINATED
-- **状态:** 🏁 **TERMINATED** (2026-03-13 23:53 CST)
-- **启动时间:** 2026-03-10 23:30
-- **最终归档:** `/home/deepnight/src/todo-demo/`
-- **技术栈:** React (Vite) + TailwindCSS, Node.js + Express, SQLite (dev mode)
-- **交付成果:**
-  - ✅ Beta 版本功能完整 (CRUD + 过滤 + 统计 + 持久化)
-  - ✅ 后端 API (Express, 88% test coverage)
-  - ✅ 前端应用 (React + Vite, 响应式设计)
-  - ✅ 全局错误提示和统计显示
-  - ✅ Nginx 配置修复和 Docker 生产配置简化
-- **负责人:** Oliver (PM) 整体协调
-- **最终评分:** **6.5/10** (功能完整但质量流程和团队协作需改进)
-- **终止原因:**
-  - ⚠️ E2E 测试通过率仅 45%，测试隔离和架构问题未解决
-  - ⚠️ 团队协作失职 (PM/DevOps 响应不足)
-  - ⚠️ 生产环境 Docker 配置未完成
-- **恢复路径:** 所有资产已归档，可随时重启开发模式演示；继续 Day 5 需新指令
-
-### Key Decisions Made
-1. 使用 Proactive Agent 技能（Halthelobster 版本 3.1.0）
-2. 采用 WAL 协议和工作缓冲区进行持久化
-3. 选择交互式 onboarding 流程
-4. 设定个性为 70/30 专业与幽默的混合
-5. 组建开发团队：Oliver (PM), Forge (Coder), Pixel (Designer), Kernel (DevOps), Sentinel (QA) - 2026-03-10
-6. 采用异步协作模式，Owner 只与 PM 直接对接
-7. 启用 agent-to-agent 通信 (2026-03-10):
-   - tools.agentToAgent.enabled: true
-   - tools.agentToAgent.allow 包含 main 和所有团队成员
-   - tools.sessions.visibility: all
-   - 所有 agents 配置 subagents.allowAgents 允许 PM/main 调用
-   - 测试：sessions_send 到 designer 成功投递
-8. 建立笔记结构：notes/areas/ 包含 proactive-tracker.md, recurring-patterns.md, outcome-journal.md
-9. 使用个性化模型配置：各 agents 根据角色选择不同模型
-10. 遵循 proactive-agent 核心原则：主动思考，减少主人认知负荷
-11. **P0 自主恢复**: 当团队无响应时，主 agent 有权直接执行故障转移 (2026-03-12)
-
-### Key Decisions Made
-1. 使用 Proactive Agent 技能（Halthelobster 版本 3.1.0）
-2. 采用 WAL 协议和工作缓冲区进行持久化
-3. 选择交互式 onboarding 流程
-4. 设定个性为 70/30 专业与幽默的混合
-5. 组建开发团队：Oliver (PM), Forge (Coder), Pixel (Designer), Kernel (DevOps), Sentinel (QA) - 2026-03-10
-6. 采用异步协作模式，Owner 只与 PM 直接对接
-7. 启用 agent-to-agent 通信 (2026-03-10):
-   - tools.agentToAgent.enabled: true
-   - tools.agentToAgent.allow 包含 main 和所有团队成员
-   - tools.sessions.visibility: all
-   - 所有 agents 配置 subagents.allowAgents 允许 PM/main 调用
-   - 测试：sessions_send 到 designer 成功投递
-8. 建立笔记结构：notes/areas/ 包含 proactive-tracker.md, recurring-patterns.md, outcome-journal.md
-9. 使用个性化模型配置：各 agents 根据角色选择不同模型
-10. 遵循 proactive-agent 核心原则：主动思考，减少主人认知负荷
-
-### 2026-03-15 - Docker Deployment & Data Persistence Mastery
-- **完成 M3U Player 的 Docker 容器化部署**
+### 2026-03-15 - M3U Player Docker Deployment & Data Persistence Mastery
+- **任务:** 完成 M3U Player 的 Docker 容器化部署
+- **实施:**
   - 创建多阶段 Dockerfile (Node.js 20-slim), 优化镜像大小
   - 配置 docker-compose.yml 编排 app + nginx 双服务
   - 设置健康检查 (curl 检查 API 端点), 确保容器就绪
   - 配置 Nginx 反向代理和端口映射
   - 创建 deploy.sh 管理脚本 (build/start/stop/logs)
-
-- **解决端口映射和环境配置问题**
-  - 应用容器端口从 3000:3000 → 3000:3456 (匹配实际监听端口)
-  - 健康检查从 wget → curl (Alpine 缺少 wget)
-  - 健康端点改为 `localhost:3456/api/data` (容器内地址)
-  - Nginx 端口 80 冲突 → 使用 8080:80
-  - 移除 docker-compose 中废弃的 `version` 属性
-
-- **数据持久化严重错误修复** (P0)
-  - **问题:** 数据看似保存但刷新丢失
-  - **根因:** `server.js` 硬编码数据库路径到容器内 `/app/m3u-player.db`, 未使用挂载卷 `/data`
-  - **解决:** 添加 `DATABASE_PATH` 环境变量支持, 自动创建目录
-  - **验证:** 数据库持久化在宿主机 `./data/`, 容器重启数据保留 ✅
-
+- **问题解决:**
+  - **端口映射错误** → 应用监听 3456，但映射为 3000:3000 → 改为 3000:3456
+  - **健康检查失败** → Alpine 缺 wget + 端点错误 → 改用 curl，端点为 `localhost:3456/api/data`
+  - **Nginx 端口冲突** → 宿主机 80 被占用 → 改为 `8080:80`
+  - **数据持久化失败 (P0)** → `server.js` 硬编码 `m3u-player.db` 到容器内 `/app/` → 添加 `DATABASE_PATH` 环境变量支持，自动创建目录
+- **验证结果:**
+  - ✅ 数据库文件持久化到宿主机 `./data/m3u-player.db`
+  - ✅ 容器重启后数据保留
+  - ✅ 应用可通过 http://localhost:8080 访问
 - **关键经验:**
-  - 容器应用必须将持久化数据写入挂载卷, 而非容器内部临时路径
-  - 环境变量配置必须与 docker-compose 同步, 不能硬编码
+  - 容器应用必须将持久化数据写入挂载卷，而非容器内部临时路径
+  - 环境变量配置必须与 docker-compose 同步，不能硬编码
   - 首次启动需处理空卷目录创建 (`fs.mkdirSync(dbDir, { recursive: true })`)
-  - 端到端验证必须包括容器重启测试, 确保真正持久化
+  - 端到端验证必须包括容器重启测试，确保真正持久化
+  - 理解容器内路径 (`/app`, `/data`) 和宿主机路径 (`./data`) 的映射关系
+  - 健康检查必须指向容器内地址，而非宿主机
 
 ### Things to Remember
 - 主人叫"主人"
@@ -352,4 +275,4 @@
 
 ---
 
-*Review and update periodically. Daily notes are raw; this is curated.*Test from deepnight at Wed Mar 11 03:12:57 PM CST 2026
+*Review and update periodically. Daily notes are raw; this is curated.*

@@ -1,0 +1,17 @@
+[Unit]
+Description=M3U8 Player 监控服务
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+User=deepnight
+ExecStart=/home/deepnight/.openclaw/workspace/scripts/monitor-m3u8-player.sh
+Restart=on-failure
+RestartSec=300
+
+# 资源限制
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

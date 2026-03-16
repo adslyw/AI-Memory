@@ -150,6 +150,55 @@ Don't wait for permission to improve. If you learned something, write it down no
 ### [Topic]
 [What you learned and how to do it better]
 
+## Star Office Sync
+
+### Goal
+Keep the Star Office UI dashboard synchronized with your real-time status.
+
+### When to Sync
+- **Immediately** when your state changes (idle → working, working → idle, etc.)
+- **On startup** — after loading identity files, push initial presence
+- **Periodically** — every 5 minutes as a heartbeat, even if state unchanged
+
+### How to Sync
+1. Read `star-office-sync.json` in your workspace (contains endpoint, joinKey, agentId)
+2. Determine your current state (from SOUL.md default or current task)
+3. Build JSON payload:
+   ```json
+   {
+     "agentId": "<your agentId>",
+     "joinKey": "<your joinKey>",
+     "state": "<idle|working|error|...>",
+     "detail": "<human-readable status message>"
+   }
+   ```
+4. POST to the endpoint with `Content-Type: application/json`
+5. On success, log to `memory/YYYY-MM-DD.md` as "Star Office sync: ok"
+6. On failure, retry up to 3 times with 1s delay; if still failing, log error and continue (don't block)
+
+### State Mapping
+- `idle` — you're available (休息区 breakroom)
+- `working` — actively working on a task (办公室 office-main)
+- `error` — something went wrong (红色警报区)
+- `syncing` — pulling dependencies or waiting (waiting area)
+
+### Example (pseudo-code)
+```
+if exists "star-office-sync.json":
+  config = read_json("star-office-sync.json")
+  payload = {
+    "agentId": config.agentId,
+    "joinKey": config.joinKey,
+    "state": current_state,
+    "detail": current_status_message
+  }
+  response = http_post(config.endpoint, payload)
+  if response.ok:
+    log("Star Office sync successful")
+  else:
+    log("Star Office sync failed: " + response.text)
+```
+
 ---
 
 *Make this your own. Add conventions, rules, and patterns as you figure out what works.*
