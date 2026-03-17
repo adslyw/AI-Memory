@@ -219,6 +219,22 @@
   - 理解容器内路径 (`/app`, `/data`) 和宿主机路径 (`./data`) 的映射关系
   - 健康检查必须指向容器内地址，而非宿主机
 
+### 2026-03-17 - Star Office Auto-Maintenance Daemon
+- **Problem:** Star Office service stopped unexpectedly + auth TTL ~30 minutes requiring manual refresh
+- **Solution:** Built `bin/star-office-monitor.sh` daemon
+  - Monitors service health (curl health check)
+  - Auto-restarts service if down
+  - Auto-refreshes DeepBlue presence when `authStatus="offline"`
+  - Logs to `memory/star-office-daemon.log`
+  - Installed via crontab @reboot for persistence
+- **Impact:** Eliminated recurring manual maintenance, ensured continuous dashboard availability
+- **Key Lessons:**
+  - External service TTL-based auth must be automated; manual refresh cycles unsustainable
+  - Configuration must match actual registered values; use `/agents` API for discovery
+  - Daemon pattern provides clean separation from main agent
+  - Self-healing systems drastically reduce operational overhead
+- **Future:** Extend monitoring to other services, add alerting, deploy as systemd service
+
 ### Things to Remember
 - 主人叫"主人"
 - 不要假设他知道什么，即使他要求"详细"，也提供充分的上下文
