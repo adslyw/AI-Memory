@@ -22,3 +22,31 @@
 - 是否可衡量价值？
 - 是否需要外部批准？
 
+---
+
+## 2026-03-17 心跳新增
+
+### Star Office Auto-Recovery Daemon
+**Context:** This morning's service outage + recurring ~30min auth expiry requiring manual refresh
+**Idea:** Bash daemon with 2-minute health check loop:
+- `curl -s http://127.0.0.1:19500/agents` fails → restart via `/home/deepnight/start_star_office.sh`
+- DeepBlue auth status "offline" → auto-push presence
+- All actions logged to `memory/star-office-monitor.log`
+**Impact:** Zero-downtime dashboard, no manual intervention needed
+**Effort:** 30 minutes (bash script + install as systemd/cron)
+**Priority:** High (reliability improvement)
+**Observed TTL:** Auth expires ~30 minutes (2026-03-17 heartbeat checks)
+
+---
+
+## 2026-03-17 心跳新增
+
+### Ready-State Project Acceleration
+**Context:** Team idle, infrastructure tested, no active project
+**Idea:** Build a "Project Kickoff Framework" to accelerate next assignment by 1-2 days:
+- Project template: docs/ (README, API spec), src/ (base structure with Docker), tests/ (E2E scaffold), docker-compose.yml (multi-service ready)
+- Oliver's task decomposition utility: CLI that takes plain requirements and outputs structured task breakdown with agent assignments
+- CI/CD templates: GitHub Actions for lint, test, build, deploy (Docker + Nginx)
+**Impact:** Reduces setup friction, ensures consistency, enables faster delivery
+**Effort:** 2-3 hours to create solid templates
+**Priority:** Medium (use time when waiting for next project)

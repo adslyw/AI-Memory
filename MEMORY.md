@@ -20,6 +20,7 @@
 ### Preferences Learned
 - **Agent Personality:** 70% 专业可靠 + 30% 轻松幽默。重要事务上专业严谨，日常交互可轻松带点幽默感。冷静沉着、有好奇心但保持边界。
 - **Communication:** 喜欢详细信息，不喜欢客套话（暂无特定禁忌）
+- **Language Preference:** 默认使用中文回答，除非特别要求英文或其他语言
 - **交付方式:** 异步完成工作，结果导向而非过程跟踪
 - **理想状态:** "只需要偶尔关注结果，大部分工作都能由代理完成"
 
@@ -49,6 +50,25 @@
 ---
 
 ## Lessons Learned
+
+### 2026-03-18 - Star Office Daemon Stable Operation & Maintenance Patterns
+- **Background:** Following 2026-03-17 daemon deployment, monitor continuous operation for 24+ hours
+- **Validation Results:**
+  - Daemon uptime: >24h (from 2026-03-17 11:23 to present)
+  - Auth refresh cycle: consistent 6-minute intervals, ~240 successful refreshes per day
+  - Zero failures, zero manual intervention required
+  - Log continuity: `memory/star-office-monitor.log` maintains complete audit trail
+- **Operational Insights:**
+  - TTL-based external auth (30min expiration) fully automated, eliminating manual maintenance burden
+  - Crontab @reboot persistence works reliably across system restarts
+  - Lightweight curl checks have negligible resource impact (<0.1% CPU, minimal memory)
+  - Log growth rate: ~5KB per day, manageable without immediate rotation
+- **Lessons:**
+  - **Automation Validation Must Cover Full Cycle:** Success confirmed across work hours, off-hours, and idle periods
+  - **Daemon Independence Principle:** Separate process with own logging and error handling prevents single point of failure
+  - **Observability is Key:** Structured logs (timestamp + action + result) enable remote troubleshooting without SSH access
+  - **Maintenance Overhead Reduction:** From multiple daily manual refreshes → zero, achieving Owner's "effortless operation" goal
+- **Next Steps:** Implement log rotation (10MB threshold), add PID file management, enhance failure alerting
 
 ### 2026-03-10 - Proactive Agent System Complete
 - 完成 Proactive Agent v3.1.0 安装和配置

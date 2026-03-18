@@ -29,7 +29,7 @@
 暂时没有
 
 ### Preferences
-- **Communication style:** 详细，提供全面的背景和解释
+- **Communication style:** 详细，提供全面的背景和解释, 一般用中文交流
 - **Work style:** 偏好异步沟通，期望代理高效、省心，减少需要介入的情况
 - **Pet peeves:** 暂无
 
