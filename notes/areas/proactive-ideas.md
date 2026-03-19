@@ -16,6 +16,25 @@
 - [ ] **Star Office 看板增强** - 在看板显示项目进度百分比、预计完成时间、阻塞原因标签
 - [ ] **知识同步优化** - 为同步过程添加变更摘要，让人一眼看到「今天发生了什么」
 
+---
+
+## 2026-03-19 心跳新增 (Early Morning)
+
+### M3U Player Automated Backup System
+**Context:** M3U Player running 45h+ with persistent SQLite database in `./data/m3u-player.db`. No backup mechanism in place. Risk: data loss from disk corruption, accidental deletion, or container failure.
+**Idea:** Daily automated backup with rotation:
+- Tarball of `data/` directory (or just the DB) to `backups/` with timestamp
+- Keep last 7 days, prune older
+- Optional: upload to remote (S3/Google Drive) if credentials available
+- Log backup successes/failures to `memory/backup.log`
+- Add to crontab: `0 2 * * * /home/deepnight/.openclaw/workspace/scripts/backup-m3u-player.sh`
+**Impact:** Data safety, peace of mind, easy restore if needed
+**Effort:** 30 minutes (script + rotation + logging)
+**Priority:** Medium (prevent data loss, M3U Player is active project)
+**Considerations:** Needs approval for crontab modification; local backup first, remote optional
+
+---
+
 ## 评估标准
 - 是否解决真实痛点？
 - 是否能自动化？

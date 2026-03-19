@@ -43,6 +43,46 @@ class M3UPlayer {
 
     // ==================== 数据持久化 (SQLite API) ====================
 
+    /**
+     * 从用户输入中提取 poster 图片 URL
+     * 支持：直接 URL、完整 <img> 标签、包含 id="poster" 的标签
+     */
+    extractPosterFromInput(input) {
+        if (!input) return null;
+        
+        const trimmed = input.trim();
+        
+        // 如果不是 HTML 标签，直接返回
+        if (!trimmed.includes('<')) {
+            return trimmed;
+        }
+        
+        try {
+            // 创建临时 DOM 解析器
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(trimmed, 'text/html');
+            
+            // 查找 img 标签（优先找 id="poster" 或 class="img-inline"）
+            let img = doc.querySelector('img#poster');
+            if (!img) img = doc.querySelector('img.img-inline');
+            if (!img) img = doc.querySelector('img');
+            
+            if (img && img.src) {
+                return img.src.trim();
+            }
+        } catch (e) {
+            console.warn('解析 poster HTML 失败，使用原始值:', e);
+        }
+        
+        // 回退：尝试正则提取 src
+        const srcMatch = trimmed.match(/src\s*=\s*["']([^"']+)["']/i);
+        if (srcMatch) {
+            return srcMatch[1].trim();
+        }
+        
+        return null;
+    }
+
     async loadChannels() {
         try {
             const res = await fetch(`${this.apiBase}/data`);
@@ -581,7 +621,8 @@ class M3UPlayer {
     async addChannel() {
         const name = document.getElementById('channel-name').value.trim();
         let url = document.getElementById('channel-url').value.trim();
-        const poster = document.getElementById('channel-poster').value.trim() || null;
+        const rawPoster = document.getElementById('channel-poster').value.trim() || null;
+        const poster = this.extractPosterFromInput(rawPoster);
 
         if (!name || !url) {
             alert('请填写频道名称和链接');
@@ -641,7 +682,9 @@ class M3UPlayer {
             name,
             url,
             poster: poster,
-            addedAt: new Date().toISOString()
+            addedAt: new Date().toISOString(),
+            type: 'm3u8',
+            size: null
         };
 
         this.channels.push(channel);
@@ -683,7 +726,9 @@ class M3UPlayer {
                     id: `sub_${Date.now()}_${i}`,
                     name: info.name || `Channel ${channels.length + 1}`,
                     poster: info.poster || null,
-                    url: ''
+                    url: '',
+                    type: 'm3u8',  // 推断类型
+                    size: null     // 直播流无法预知大小
                 };
                 continue;
             }
@@ -704,7 +749,9 @@ class M3UPlayer {
                     channels.push({
                         id: `sub_${Date.now()}_${i}`,
                         name: `Channel ${channels.length + 1}`,
-                        url: line
+                        url: line,
+                        type: 'm3u8',
+                        size: null
                     });
                 }
             }

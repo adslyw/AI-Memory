@@ -56,6 +56,10 @@
     "feishu-messaging": {
       "version": "0.0.3",
       "installedAt": 1772898266968
+    },
+    "tmux": {
+      "version": "1.0.0",
+      "installedAt": 1773922318094
     }
   }
 }
