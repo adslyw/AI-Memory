@@ -51,6 +51,23 @@
 
 ## Lessons Learned
 
+### 2026-03-19 - Knowledge Sync Automation & M3U Player Backup System
+- **自动化运维成熟** - 知识同步 cron 任务稳定执行（01:41），涵盖 core/memory/notes/skills 四大模块
+- **Git 状态管理** - 自动检测远程/本地变更，静默处理无变更场景，无需人工干预
+- **M3U Player 备份** - 实现 backup-m3u-player.sh，7 天轮转策略，为 45+ 小时持续运行服务提供数据保护
+- **系统健康指标** - 所有服务（Star Office 守护、M3U Player、知识同步）均运行正常，零故障
+- **经验总结:**
+  - 定期自动化执行本身就是验证机制，确保脚本完整性和权限正确
+  - 长期运行服务必须配套自动备份和轮转策略，防止数据丢失
+  - 日志结构化（Summary/Tasks/Status/Issues/Notes）支持可追溯性和知识提炼
+  - 守护进程独立运行、互不干扰的设计提升系统韧性
+  - 从"需要监控"向"无需关注"过渡是自动化运维的高级形态
+- **改进方向:**
+  - 添加日志轮转（10MB 阈值）
+  - 实现备份完整性验证（周级自动恢复测试）
+  - 增加执行统计（成功率、耗时、变更数）和异常告警
+  - 将备份框架扩展为通用服务支撑平台
+
 ### 2026-03-18 - Star Office Daemon Stable Operation & Maintenance Patterns
 - **Background:** Following 2026-03-17 daemon deployment, monitor continuous operation for 24+ hours
 - **Validation Results:**

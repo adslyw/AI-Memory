@@ -5,8 +5,11 @@
 set -euo pipefail
 
 # ==================== 配置区域 ====================
-PROJECT_DIR="/home/deepnight/.openclaw/workspace/projects/m3u-player"
-WORKTREE_BASE="${PROJECT_DIR}-worktrees"
+# 使用整个 workspace 作为 git 仓库
+REPO_DIR="/home/deepnight/.openclaw/workspace"
+PROJECT_SUBDIR="projects/m3u-player"  # 项目在仓库中的相对路径
+PROJECT_DIR="${REPO_DIR}/${PROJECT_SUBDIR}"
+WORKTREE_BASE="${REPO_DIR}/m3u-player-worktrees"
 SOCKET_DIR="${TMPDIR:-/tmp}/clawdbot-tmux-sockets"
 SOCKET="${SOCKET_DIR}/m3u-player-agents.sock"
 # ================================================
@@ -23,15 +26,19 @@ echo "Socket: $SOCKET"
 echo ""
 
 # 检查主仓库
-if [[ ! -d "$PROJECT_DIR/.git" ]]; then
+if [[ ! -d "$PROJECT_DIR/.git" ]] && ! git -C "$PROJECT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "❌ 错误: $PROJECT_DIR 不是 git 仓库"
   echo "请先初始化: cd $PROJECT_DIR && git init"
   exit 1
 fi
 
-# 确保主仓库有所有远程分支
-echo "📥 同步远程分支..."
-(cd "$PROJECT_DIR" && git fetch origin --quiet)
+# 确保主仓库有所有远程分支（如果配置了 origin）
+echo "📥 检查远程仓库..."
+if git -C "$PROJECT_DIR" remote get-url origin >/dev/null 2>&1; then
+  (cd "$PROJECT_DIR" && git fetch origin --quiet) || echo "⚠️  Fetch 失败，继续使用本地分支"
+else
+  echo "ℹ️  无远程仓库，使用本地分支"
+fi
 
 # 定义任务：branch_name : 描述 : 工作目录 : 命令
 TASKS=(
@@ -47,12 +54,13 @@ for task_def in "${TASKS[@]}"; do
   # 创建工作目录
   mkdir -p "$workdir"
 
-  # 检查分支是否存在
-  if git -C "$PROJECT_DIR" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+  # 检查分支是否存在（本地或远程）
+  if git -C "$PROJECT_DIR" show-ref --verify --quiet "refs/heads/$branch" || \
+     git -C "$PROJECT_DIR" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
     # 分支存在，创建或更新 worktree
     if [[ -d "$workdir/.git" ]]; then
       echo "  ↯ 更新 worktree: $branch"
-      (cd "$workdir" && git fetch origin && git checkout "$branch" && git pull origin "$branch" 2>/dev/null || true)
+      (cd "$workdir" && git checkout "$branch" && git pull origin "$branch" 2>/dev/null || true)
     else
       echo "  ✨ 创建 worktree: $branch"
       git -C "$PROJECT_DIR" worktree add "$workdir" "$branch" 2>/dev/null || \

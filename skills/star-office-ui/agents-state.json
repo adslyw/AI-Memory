@@ -36,14 +36,14 @@
     "isMain": false,
     "state": "idle",
     "detail": "自动同步",
-    "updated_at": "2026-03-19T23:00:01.113250",
+    "updated_at": "2026-03-19T23:10:01.465327",
     "area": "breakroom",
     "source": "remote-openclaw",
     "joinKey": "ocj_starteam03",
     "authStatus": "approved",
     "authApprovedAt": "2026-03-18T00:26:01.323830",
     "authExpiresAt": "2026-03-19T00:26:01.323842",
-    "lastPushAt": "2026-03-19T23:00:01.113264",
+    "lastPushAt": "2026-03-19T23:10:01.465340",
     "avatar": "guest_role_6"
   },
   {
@@ -84,14 +84,14 @@
     "isMain": false,
     "state": "idle",
     "detail": "自动同步",
-    "updated_at": "2026-03-19T23:00:01.322814",
+    "updated_at": "2026-03-19T23:10:01.666174",
     "area": "breakroom",
     "source": "remote-openclaw",
     "joinKey": "ocj_starteam07",
     "authStatus": "approved",
     "authApprovedAt": "2026-03-18T00:26:01.497095",
     "authExpiresAt": "2026-03-19T00:26:01.497106",
-    "lastPushAt": "2026-03-19T23:00:01.322827",
+    "lastPushAt": "2026-03-19T23:10:01.666186",
     "avatar": "guest_role_3"
   },
   {
@@ -100,14 +100,14 @@
     "isMain": false,
     "state": "idle",
     "detail": "Auto-refresh from daemon",
-    "updated_at": "2026-03-19T22:57:27.796814",
+    "updated_at": "2026-03-19T23:09:28.163683",
     "area": "breakroom",
     "source": "remote-openclaw",
     "joinKey": "ocj_starteam08",
     "authStatus": "approved",
-    "authApprovedAt": "2026-03-19T22:57:27.796795",
-    "authExpiresAt": "2026-03-20T22:57:27.796806",
-    "lastPushAt": "2026-03-19T22:57:27.796818",
+    "authApprovedAt": "2026-03-19T23:09:28.163649",
+    "authExpiresAt": "2026-03-20T23:09:28.163668",
+    "lastPushAt": "2026-03-19T23:09:28.163691",
     "avatar": "guest_role_3"
   }
 ]
