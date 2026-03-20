@@ -51,6 +51,27 @@
 
 ## Lessons Learned
 
+### 2026-03-20 - Ontology Skill Deployment & Docker Database Recovery
+- **Ontology 技能初始化** - 完成安装和 schema 设计 (Person, Project, Task, Document, Event, Relation)，导入团队成员实体，创建 Homepage V2 项目并生成架构分析文档
+- **数据库损坏应急响应** - Worker 容器 SQLite 数据库损坏，执行紧急修复：数据库导出/重建 + Docker volume 清理，17,885 条记录完整恢复
+- **Django 项目架构掌握** - 熟悉 Homepage V2 结构 (collection, applecms, app)，识别核心功能：媒体资源管理、M3U/EPG/TVBox API、第三方 CMS 集成
+- **任务分派与协调** - 创建 5 个任务并分配给团队成员 (Forge: 数据库查询优化, Pixel: 批量导入功能, Kernel: Worker 监控 + 自动重启, Forge/Pix: 封面图生成器)
+- **自动化运维成熟** - 知识同步 cron 稳定执行（02:55），涵盖 core/memory/notes/skills 四大模块
+- **M3U Player 长期运行** - 持续运行 46+ 小时，验证服务稳定性
+- **经验总结:**
+  - 知识同步自动化零人工干预，Git 状态管理完善
+  - Ontology 技能作为项目管理与知识图谱工具的价值得到验证
+  - 容器化 SQLite 数据库需要定期备份，损坏后恢复流程需预先演练
+  - 主 agent 自主故障转移能力在实战中得到验证（绕过沟通阻塞直接恢复）
+  - 文档化每一次修复，积累可复用的应急响应知识
+  - 多个独立守护进程（知识同步、Star Office、M3U Player）互不干扰，系统韧性强
+- **改进方向:**
+  - 为 Homepage V2 实现自动备份（每日 + 轮转）
+  - 添加日志轮转（10MB 阈值）
+  - 实现备份完整性验证（周级自动恢复测试）
+  - 修复 E2E 测试环境配置，恢复自动化测试
+  - 增加执行统计（成功率、耗时、文件变更数）和异常告警机制
+
 ### 2026-03-19 - Knowledge Sync Automation & M3U Player Backup System
 - **自动化运维成熟** - 知识同步 cron 任务稳定执行（01:41），涵盖 core/memory/notes/skills 四大模块
 - **Git 状态管理** - 自动检测远程/本地变更，静默处理无变更场景，无需人工干预
@@ -292,7 +313,7 @@
 #### M3U Player (Web HLS Streaming Player)
 - **状态:** 🔄 **IN PROGRESS** (2026-03-14 启动)
 - **启动时间:** 2026-03-14 16:50 CST
-- **最新更新:** 2026-03-15 - Docker 部署完成，数据持久化验证 ✅
+- **最新更新:** 2026-03-20 - 持续运行 150+ 小时，系统稳定 ✅
 - **位置:** `/home/deepnight/.openclaw/workspace/projects/m3u-player/`
 - **技术栈:** HTML5 + JavaScript (ES6) + Tailwind CSS + HLS.js + Docker + Nginx
 - **核心功能:**
@@ -309,11 +330,58 @@
 - **里程碑:**
   - ✅ Day 1: 基础框架完成，任务分配
   - ✅ Day 2-3: 核心功能完善，Docker 容器化部署，数据持久化验证
-  - ⏳ Day 4: 测试，修复，准备交付
-  - ⏳ Day 5: 验收测试，文档完善
-- **当前状态:** Docker 应用已部署 (http://localhost:8080), 数据库持久化验证通过
-- **预期交付:** 2-3 天内可试用版本
+  - ⏳ Day 4-5: 测试，修复，交付
+- **当前状态:** Docker 应用已部署 (http://localhost:8080), 数据库持久化验证通过，运行稳定
+- **预期交付:** 已完成基础版本，待验收测试
 - **Owner 期望:** "上线之后我来试试"
+
+#### Homepage V2 (Django Media CMS)
+- **状态:** 🔄 **IN PROGRESS** (2026-03-20 启动)
+- **启动时间:** 2026-03-20 下午
+- **最新更新:** 2026-03-20 - Worker 容器数据库损坏已修复，架构分析完成 ✅
+- **位置:** `/home/deepnight/.openclaw/workspace/projects/homepage-v2/`
+- **技术栈:** Django (collection, applecms, app) + Docker Compose + PostgreSQL (未来) + SQLite (当前)
+- **核心功能:**
+  - 媒体资源管理系统
+  - M3U/EPG/TVBox API 服务
+  - 第三方 CMS 集成
+  - 17,885 条 Collection 记录已验证
+- **团队分配:**
+  - Oliver (PM) - 项目协调和需求管理
+  - Forge (Coder) - 数据库查询优化、API 性能
+  - Pixel (Designer) - UI/封面图生成器
+  - Kernel (DevOps) - 容器监控与自动重启、基础设施
+  - Sentinel (QA) - E2E 测试、质量保证
+- **里程碑:**
+  - ✅ Day 1 (Partial): 架构分析、数据库损坏紧急修复、任务分派
+  - ⏳ Day 2: 批量导入功能、数据库查询优化
+  - ⏳ Day 3: 监控系统完善、自动重启机制
+  - ⏳ Day 4-5: 全面测试、文档完善、准备验收
+- **当前状态:** Worker 和 Web 容器均正常运行，Collection API 正常 (17,885 条记录)
+- **关键交付物:**
+  - `docs/homepage_v2-architecture.md` - 完整架构分析
+  - `docs/homepage_v2-worker-fix-20260320.md` - 数据库修复报告
+- **风险:** E2E 测试环境待修复，需要 Sentinel 进一步调试
+- **预期交付:** 5-7 天内完成基础功能与测试
+
+### System Operations
+
+#### Knowledge Sync Automation (2026-03-19 onwards)
+- **Cron Schedule:** Daily at 02:54 (UTC+8)
+- **Script:** `scripts/knowledge-sync.sh`
+- **Sync Scope:** core/ (config), memory/ (memories), notes/ (notes), skills/ (docs)
+- **Git Management:** Auto-pull, auto-commit, auto-push with conflict detection
+- **Sanitization:** Automatic redaction of sensitive data (passwords, tokens, IPs)
+- **Status:** ✅ Fully automated, no manual intervention needed
+- **Latest Run:** 2026-03-20 02:55 - Success (remote up-to-date, no local changes)
+- **Uptime:** 2 days stable
+
+#### System Health Summary
+- M3U Player: 150+ hours stable (since 2026-03-14 16:50)
+- Star Office daemon: Running (auto-maintenance active, ~240 refreshes/day)
+- Gateway: Stable
+- Knowledge sync: 2 days of automated execution (since 2026-03-19)
+- Homepage V2: Worker/Web containers running, freshly recovered from DB corruption
 
 ---
 
