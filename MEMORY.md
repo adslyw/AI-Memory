@@ -25,7 +25,7 @@
 - **理想状态:** "只需要偶尔关注结果，大部分工作都能由代理完成"
 
 ### Important Dates
-暂无
+- **2026-03-25** — Large-scale repository restructuring and agent directory standardization (agents/ per-agent folders, simplified MEMORY.md, updated Star Office sync mechanism).
 
 ---
 
@@ -45,122 +45,6 @@
 
 **Note:** All agents have ClawTeam skill installed. Nexus is the only spawn-capable coordinator; others use `task list`, `board show`, `inbox peek` for visibility.
 
-### Team Coordination Model (ClawTeam Enhanced)
-
-- **Atlas (PM)** — 对齐目标、优先级、用户沟通
-- **Nexus (Coordinator)** — 使用 ClawTeam 动态分配并行任务
-  - spawn 临时 workers 处理批量工作
-  - 管理任务依赖链
-  - 自动清理完成的工作区
-- **All agents** use Proactive Agent v3.1.0 patterns
-- **Async-first** — Owner 只与 Atlas 直接对接
-- **Shared Knowledge:** Ontology graph for Projects, Tasks, Learnings
-
-### Agent Responsibilities
-
-**Atlas (PM):**
-- 接收 Owner 指令 → 分解为 tasks
-- 分配给 appropriate 角色 (Nexus, Forge, Pixel, etc.)
-- Monitor progress via board reports
-- Escalate issues to Owner
-
-**Nexus (Coordinator):**
-- Parse Atlas tasks → spawn ClawTeam workers
-- Choose template or custom spawn command
-- Track task dependencies (`--blocked-by`)
-- Merge completed worktrees
-- Report completion to Atlas
-
-**Forge (Coder):**
-- Backend logic, database queries, API performance
-- CORS proxy, M3U8 rewrite, auth flows
-- Integrate with devops (Kernel) for containerization
-
-**Pixel (Designer):**
-- UI components, styling, visual polish
-- Cover image generator (homepage integration)
-- User experience flows
-
-**UX-1 (Frontend):**
-- Homepage V2 frontend pages
-- Frontend-backend API integration
-- Client-side logic and state management
-
-**Kernel (DevOps):**
-- Docker containers, health checks, monitoring
-- Backups, log rotation, reliability
-- Infrastructure provisioning
-
-**Sentinel (QA):**
-- E2E testing (Playwright)
-- Bug reporting and validation
-- Test coverage analysis
-
----
-
-## ClawTeam Coordination Patterns
-
-### Nexus Spawn Patterns
-
-**Parallel batch workers:**
-```bash
-clawteam spawn --team homepage-v2 --agent-name batch-worker-1 --task "import channel A"
-clawteam spawn --team homepage-v2 --agent-name batch-worker-2 --task "import channel B"
-```
-
-**Template-based hedge fund style:**
-```bash
-clawteam launch parallel-batch --team import-job --goal "Import 1000 channels" --count 5
-```
-
-### Task Management Workflow
-
-1. Atlas creates tasks in Ontology (or legacy `.clawteam/tasks/`)
-2. Nexus spawns workers for each task (or spawns one worker to handle multiple)
-3. Workers update status in shared board
-4. Nexus merges completed worktrees (if applicable)
-5. Sentinel validates final integration
-6. Atlas reports to Owner
-
-### Cleanup
-
-After task completion:
-- `clawteam workspace cleanup <team> <agent>` (if no merge needed)
-- Or `clawteam workspace merge` then cleanup
-- Team can stay registered for next batch (zero-cold-start)
-
----
-
-## Self-Improvement System
-
-### All Agents Must Log
-
-When these events occur, append to corresponding files in `.learnings/`:
-
-| Event | File | Category |
-|-------|------|----------|
-| Command/operation fails | ERRORS.md | `error` |
-| User corrects you | LEARNINGS.md | `correction` |
-| Missing capability requested | FEATURE_REQUESTS.md | `feature` |
-| Knowledge gap discovered | LEARNINGS.md | `knowledge_gap` |
-| Better approach found | LEARNINGS.md | `best_practice` |
-
-**Entry format:** See `skills/self-improving-agent/SKILL.md`. Use consistent metadata.
-
-### Promotions
-
-When learnings become broadly applicable, promote to:
-- `AGENTS.md` — workflows, collaboration patterns
-- `TOOLS.md` — tool configurations, gotchas
-- `SOUL.md` — behavioral principles
-- `CLAUDE.md` (per-project) — code conventions
-
-### Review Cadence
-
-- At session start: check pending learnings (high priority)
-- Weekly: distill recurring patterns
-- Monthly: review all `.learnings/` for promotions
-
 ---
 
 ## Proactive Behaviors
@@ -172,7 +56,7 @@ When learnings become broadly applicable, promote to:
 
 ### Weekly (Monday 09:00)
 - Reverse prompting: "What could I do for you that you haven't thought of?"
-- Ask: "What information would help me be more useful?"
+- Ask: "What information would help me be more useful to you?"
 - Review `notes/areas/recurring-patterns.md`
 
 ### On Task Completion
@@ -241,68 +125,9 @@ Don't wait for permission to improve. If you learned something, write it down no
 
 ---
 
-## Learned Lessons
-
-> Add your lessons here as you learn you learn them
-
-### ClawTeam Coordination Layer for Parallelism
-**What:** Introducing a dedicated coordinator (Nexus) that spawns parallel workers via ClawTeam dramatically increases task throughput, especially for batch operations (e.g., importing 930 media items).
-**How:** Use `clawteam spawn` with templates (`parallel-batch`, `hedge-fund`) and manage dependencies with `--blocked-by`. Only the coordinator should have spawn permissions; workers should be read-only.
-**When:** Whenever a task can be decomposed into independent subtasks (data processing, bulk imports, parallel analysis).
-**Why it works:** Isolates coordination logic from PM (Atlas), allows dynamic resource allocation, and keeps worker agents focused on execution.
-
-### Global Exec Approvals Allowlist
-**What:** Instead of per-task exec approvals, configure a global allowlist pattern `"*/clawteam"` (or specific trusted binaries) in the runtime config.
-**How:** Edit `gateway.yml` or use `gateway config.patch` to add the pattern to `exec.allowlist`. Apply and restart.
-**Impact:** Nexus can spawn workers without individual approval prompts, enabling fully automated task distribution while maintaining security boundaries.
-**Caution:** Only allowlist vetted tools; monitor usage via logs.
-
-### Role Specialization Reduces Cognitive Load
-**What:** Adding dedicated roles (Nexus for coordination, UX-1 for frontend) and keeping PM (Atlas) focused on alignment improves overall team efficiency.
-**How:** Define clear responsibilities:
-- Atlas: goals, priorities, stakeholder communication
-- Nexus: task decomposition, worker spawn, dependency tracking
-- Domain specialists (Forge, Pixel, UX-1, Kernel, Sentinel): execute within their domain
-**Result:** Reduced context switching, clearer accountability, easier agent onboarding.
-
-### Self-Improvement System as institutional memory
-**What:** Each agent's `.learnings/` directory (ERRORS.md, LEARNINGS.md, FEATURE_REQUESTS.md) automatically captures process improvements.
-**How:** Proactive Agent v3.1.0 pattern: log BEFORE responding. Promotable to AGENTS.md, TOOLS.md, SOUL.md when broadly applicable.
-**Benefit:** Creates audit trail of mistakes, corrections, and innovations without manual effort.
-
----
-
-## Star Office Sync
-
-### Goal
-Keep the Star Office UI dashboard synchronized with your real-time status.
-
-### When to Sync
-- **Immediately** when your state changes (idle → working, working → idle, etc.)
-- **On startup** — after loading identity files, push initial presence
-- **Periodically** — every 5 minutes as a heartbeat, even if state unchanged
-
-### How to Sync
-1. Read `star-office-sync.json` in your workspace (contains endpoint, joinKey, agentId)
-2. Determine your current state (from SOUL.md default or current task)
-3. Build JSON payload:
-   ```json
-   {
-     "agentId": "<your agentId>",
-     "joinKey": "<your joinKey>",
-     "state": "<idle|working|error|...>",
-     "detail": "<human-readable status message>"
-   }
-   ```
-4. POST to the endpoint with `Content-Type: application/json`
-5. On success, log to `memory/YYYY-MM-DD.md` as "Star Office sync: ok"
-6. On failure, retry up to 3 times with 1s delay; if still failing, log error and continue (don't block)
-
-### State Mapping
-- `idle` — you're available (休息区 breakroom)
-- `working` — actively working on a task (办公室 office-main)
-- `error` — something went wrong (红色警报区)
-- `syncing` — pulling dependencies or waiting (waiting area)
+## Star Office 状态同步规则
+- 接到任务时：先执行 `python3 set_state.py <状态> "<描述>"` 再开始工作
+- 完成任务后：执行 `python3 set_state.py idle "待命中"` 再回复
 
 ---
 
