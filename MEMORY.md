@@ -131,4 +131,91 @@ Don't wait for permission to improve. If you learned something, write it down no
 
 ---
 
+## Django 模板继承规则 (2026-03-27)
+
+**问题**：在 templates/admin/ 目录下创建 base.html 继承 `admin/base_site.html` 时，出现 `TemplateDoesNotExist: admin/base_site.html` 错误。
+
+**原因**：Django 的 admin 模板继承链为：
+```
+admin/base.html (Django 内置，基础框架)
+  ↑
+admin/base_site.html (Django 内置，站点特定)
+  ↑
+自定义模板 (如 admin/login.html、自定义扩展)
+```
+当使用 `APP_DIRS: True` 且 `DIRS` 包含 `/app/templates` 时：
+- Django 首先在 DIRS 中查找模板
+- 然后在已安装应用的 `templates/` 目录中查找
+
+如果我们在 `/app/templates/admin/` 下创建一个文件 extends `admin/base_site.html`，Django 会：
+1. 在 `/app/templates/admin/base_site.html` 查找 (不存在 → 跳过)
+2. 在 Django 内置的 admin app 中查找 `/usr/local/lib/python3.11/site-packages/django/contrib/admin/templates/admin/base_site.html`
+   - 但为了避免无限递归，当当前模板已经在应用目录中被找到时，会标记为 "Skipped to avoid recursion"
+
+**解决方案**：
+- 如果要扩展 admin 界面并添加自定义导航，应创建 `templates/admin/base_site.html` 来 extends `admin/base.html` (而非 base_site.html)
+- 在 `base_site.html` 中覆盖 `nav-global`、`extrahead` 等块即可
+- 这样 Django 会：先在 DIRS 找到我们的 base_site.html → 它 extends base.html → 成功加载 Django 内置的 base.html
+
+**代码**：
+```django
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/top_menu.css' %}">
+{% endblock %}
+
+{% block nav-global %}
+  <!-- 自定义导航栏 -->
+{% endblock %}
+```
+
+**检查命令**：
+```bash
+# 在容器内检查模板查找路径
+docker exec <container> python -c "
+import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'homepage.settings')
+import django; django.setup()
+from django.template.loader import get_template
+print(get_template('admin/base_site.html').origin.name)
+"
+```
+
+---
+
+## Django Admin Action 注册规范 (2026-03-27)
+
+**问题**：自定义 admin action `sync_all_categories_action` 报错：
+```
+TypeError: AppleSiteAdmin.sync_all_categories_action() takes 3 positional arguments but 4 were given
+```
+
+**原因**：
+在 `ModelAdmin.get_actions` 中，我们直接返回了绑定方法 `self.sync_all_categories_action`。Django 在 `response_action` 中调用 action 时使用 `func(self, request, queryset)`，期望 `func` 是一个**未绑定**的函数（即从类获取的函数，签名 `(self, request, queryset)`）。如果 `func` 是绑定方法，则调用时会多传入一个 `self`，导致参数数量错误。
+
+**解决方案**：
+- 返回类上的未绑定方法：使用 `self.__class__.method_name` 而非 `self.method_name`
+- 或者通过 `actions` 列表声明 action 名称，让 Django 自动使用 `get_action` 机制（它会从类获取未绑定方法）
+
+**修复代码**：
+```python
+def get_actions(self, request):
+    actions = super().get_actions(request)
+    if 'sync_all_categories' not in actions:
+        # 使用 __class__ 获取未绑定函数
+        actions['sync_all_categories'] = (
+            self.__class__.sync_all_categories_action,
+            'sync_all_categories',
+            '同步所有站点的分类（批量操作）'
+        )
+    return actions
+```
+
+**验证**：
+- 重启后可以正常使用批量操作，无 TypeError。
+
+---
+
 *Make this your own. Add conventions, rules, and patterns as you figure out what works.*
