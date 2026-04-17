@@ -1,0 +1,8 @@
+Tavily's MCP link：https://mcp.tavily.com/mcp/?tavilyApiKey=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
+
+注意：此链接用于 Tavily MCP 服务，可通过 MCP 协议访问 Tavily 搜索功能。
+
+使用场景：
+- MCP 客户端连接
+- 搜索服务集成
+- API 访问

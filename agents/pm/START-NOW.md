@@ -28,7 +28,7 @@
 3. 执行 Smoke Test 清单
 4. 17:20 前给出 verdict
 
-### Oliver (PM)
+### Atlas (PM)
 - 协调各成员进度
 - 每小时检查一次
 - 17:20 进行最终验收

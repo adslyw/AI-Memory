@@ -1,11 +1,11 @@
 {
-  "lastCheck": "2026-03-11T23:18:00+08:00",
+  "lastCheck": "2026-03-23T07:20:00+08:00",
   "status": "healthy",
   "actions": [
-    "知识同步完成",
-    "日志检查: 无错误",
-    "Star Office 服务重启",
-    "团队状态同步正常"
+    "验证后端服务运行正常（port 19000）",
+    "确认 agent-push 守护进程运行中",
+    "验证 agents-state.json 包含 DeepBlue（state=idle）",
+    "Star Office 集成健康"
   ],
-  "nextCheck": "2026-03-11T23:23:00+08:00"
+  "nextCheck": "2026-03-23T07:50:00+08:00"
 }

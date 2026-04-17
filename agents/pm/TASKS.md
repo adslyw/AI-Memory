@@ -109,7 +109,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 
 ---
 
-### 5. Oliver (PM) - 协调和验收
+### 5. Atlas (PM) - 协调和验收
 
 **时间:** 持续
 
@@ -137,13 +137,13 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 | 17:10 | Pixel (Designer) 完成 UI 优化 |
 | 17:15 | Kernel (DevOps) 完成部署脚本 + 开始测试 |
 | 17:20 | Forge (Coder) 完成代码修复 + QA 完成 Smoke Test |
-| 17:25 | Oliver (PM) 验收并通知主人 |
+| 17:25 | Atlas (PM) 验收并通知主人 |
 
 ---
 
 ## 🚨 阻塞 escalation
 
-任何成员遇到阻塞 > 10 分钟，立即报告 PM Oliver 和主 agent。
+任何成员遇到阻塞 > 10 分钟，立即报告 PM Atlas 和主 agent。
 
 ---
 

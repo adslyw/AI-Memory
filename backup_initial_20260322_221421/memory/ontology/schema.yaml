@@ -1,0 +1,143 @@
+types:
+  Person:
+    required: [name]
+    description: "People involved in the system"
+
+  Organization:
+    required: [name]
+    description: "Organizations or groups"
+
+  Project:
+    required: [name, status]
+    properties:
+      status:
+        type: string
+        enum: [planning, active, paused, completed, cancelled]
+    description: "Projects with goals and timeline"
+
+  Task:
+    required: [title, status]
+    properties:
+      status:
+        type: string
+        enum: [open, in_progress, blocked, done, cancelled]
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+      due:
+        type: string
+        format: date-time
+      assignee:
+        type: string
+        description: "Entity ID of assignee"
+      blockers:
+        type: array
+        items:
+          type: string
+    description: "Actionable tasks"
+
+  Goal:
+    required: [description]
+    description: "Objectives with metrics and deadlines"
+
+  Event:
+    required: [title, start]
+    properties:
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      location:
+        type: string
+      recurrence:
+        type: string
+    description: "Calendar events"
+
+  Location:
+    required: [name]
+    description: "Physical or virtual locations"
+
+  Document:
+    required: [title]
+    properties:
+      path:
+        type: string
+      url:
+        type: string
+        format: uri
+      summary:
+        type: string
+    description: "Documents and files"
+
+  Message:
+    description: "Communication messages"
+
+  Note:
+    description: "Notes with tags and references"
+
+  Account:
+    required: [service]
+    description: "Service accounts (without storing secrets)"
+
+  Device:
+    description: "Physical devices"
+
+  Credential:
+    required: [service, secret_ref]
+    forbidden_properties: [password, secret, token]
+    description: "Credential references only"
+
+relations:
+  has_owner:
+    from_types: [Project, Task]
+    to_types: [Person]
+    cardinality: many_to_one
+    description: "Ownership relationship"
+
+  has_member:
+    from_types: [Organization]
+    to_types: [Person]
+    cardinality: many_to_many
+
+  has_task:
+    from_types: [Project]
+    to_types: [Task]
+    cardinality: one_to_many
+
+  for_project:
+    from_types: [Task, Event, Document]
+    to_types: [Project]
+
+  blocks:
+    from_types: [Task]
+    to_types: [Task]
+    acyclic: true
+    description: "Task dependencies"
+
+  related_to:
+    from_types: [Note, Document, Message]
+    cardinality: many_to_many
+    description: "Flexible relation between any entities"
+
+  attends:
+    from_types: [Person]
+    to_types: [Event]
+
+  located_at:
+    from_types: [Event]
+    to_types: [Location]
+
+  uses_device:
+    from_types: [Person]
+    to_types: [Device]
+
+  owns_account:
+    from_types: [Person]
+    to_types: [Account]
+
+  triggers:
+    from_types: [Task]
+    to_types: [Event]
+    description: "Task completion triggers an event"

@@ -60,6 +60,18 @@
     "tmux": {
       "version": "1.0.0",
       "installedAt": 1773922318094
+    },
+    "ontology": {
+      "version": "1.0.4",
+      "installedAt": 1773936038204
+    },
+    "cli-anything": {
+      "version": "0.1.0",
+      "installedAt": 1774008146777
+    },
+    "dida-cli": {
+      "version": "1.0.4",
+      "installedAt": 1775746797108
     }
   }
 }

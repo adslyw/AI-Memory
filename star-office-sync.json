@@ -1,6 +1,6 @@
 {
-  "endpoint": "http://127.0.0.1:19500/agent-push",
+  "endpoint": "http://127.0.0.1:19000/agent-push",
   "joinKey": "ocj_starteam08",
-  "agentId": "agent_1773466370518_cflv",
+  "agentId": "agent_1774212327628_85u4",
   "agentName": "DeepBlue"
 }

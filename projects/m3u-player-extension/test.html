@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M3U Player 诊断</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #f5f5f5; }
+    h1 { color: #1e40af; font-size: 1.5rem; margin-bottom: 1rem; }
+    .test { background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .test h2 { margin: 0 0 12px 0; font-size: 1.1rem; color: #374151; }
+    .result { margin-top: 8px; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; }
+    .pass { background: #d1fae5; color: #065f46; }
+    .fail { background: #fee2e2; color: #991b1b; }
+    .info { background: #dbeafe; color: #1e40af; }
+    button { background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #9ca3af; cursor: not-allowed; }
+    .summary { font-weight: bold; margin-top: 12px; }
+    .back-btn { display: inline-block; margin-bottom: 20px; background: #6b7280; text-decoration: none; padding: 8px 16px; border-radius: 6px; color: white; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <a href="popup.html" class="back-btn">← 返回播放器</a>
+  <h1>🔧 M3U Player 诊断工具</h1>
+
+  <div class="test">
+    <h2>测试 1: chrome.storage API 权限</h2>
+    <button onclick="runTest1()">运行测试</button>
+    <div id="result1" class="result">等待运行...</div>
+  </div>
+
+  <div class="test">
+    <h2>测试 2: 写入数据</h2>
+    <button onclick="runTest2()">运行测试</button>
+    <div id="result2" class="result">等待运行...</div>
+  </div>
+
+  <div class="test">
+    <h2>测试 3: 读取数据</h2>
+    <button onclick="runTest3()">运行测试</button>
+    <div id="result3" class="result">等待运行...</div>
+  </div>
+
+  <div class="test">
+    <h2>测试 4: 删除数据</h2>
+    <button onclick="runTest4()">运行测试</button>
+    <div id="result4" class="result">等待运行...</div>
+  </div>
+
+  <div class="test">
+    <h2>测试 5: 完整流程</h2>
+    <button onclick="runAllTests()">运行所有测试</button>
+    <div id="result5" class="result">等待运行...</div>
+  </div>
+
+  <script>
+    const TEST_KEY = '_m3u_player_test_';
+    const TEST_VALUE = { timestamp: Date.now(), message: 'Hello from M3U Player extension!' };
+
+    function log(elementId, message, type = 'info') {
+      const el = document.getElementById(elementId);
+      const prefix = type === 'pass' ? '✅' : type === 'fail' ? '❌' : 'ℹ️';
+      el.textContent = prefix + ' ' + message;
+      el.className = 'result ' + type;
+    }
+
+    async function runTest1() {
+      try {
+        if (typeof chrome === 'undefined' || !chrome.storage) {
+          log('result1', 'chrome.storage API 不可用（非扩展环境？）', 'fail');
+          return;
+        }
+        log('result1', 'chrome.storage API 可用\n权限: storage, host_permissions\n扩展上下文检测通过', 'pass');
+      } catch (e) {
+        log('result1', '错误: ' + e.message, 'fail');
+      }
+    }
+
+    async function runTest2() {
+      try {
+        await new Promise((resolve, reject) => {
+          chrome.storage.local.set({ [TEST_KEY]: TEST_VALUE }, () => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve();
+          });
+        });
+        log('result2', `写入成功\nKey: ${TEST_KEY}\nValue: ${JSON.stringify(TEST_VALUE)}`, 'pass');
+      } catch (e) {
+        log('result2', `写入失败: ${e.message}`, 'fail');
+      }
+    }
+
+    async function runTest3() {
+      try {
+        const result = await new Promise((resolve, reject) => {
+          chrome.storage.local.get([TEST_KEY], (res) => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve(res);
+          });
+        });
+        if (result[TEST_KEY]) {
+          log('result3', `读取成功\n数据: ${JSON.stringify(result[TEST_KEY])}`, 'pass');
+        } else {
+          log('result3', '读取失败: 数据不存在', 'fail');
+        }
+      } catch (e) {
+        log('result3', `读取失败: ${e.message}`, 'fail');
+      }
+    }
+
+    async function runTest4() {
+      try {
+        await new Promise((resolve, reject) => {
+          chrome.storage.local.remove([TEST_KEY], () => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve();
+          });
+        });
+        // 验证删除
+        const check = await new Promise((resolve, reject) => {
+          chrome.storage.local.get([TEST_KEY], (res) => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve(res);
+          });
+        });
+        if (!check[TEST_KEY]) {
+          log('result4', '删除成功', 'pass');
+        } else {
+          log('result4', '删除失败: 数据仍存在', 'fail');
+        }
+      } catch (e) {
+        log('result4', `删除失败: ${e.message}`, 'fail');
+      }
+    }
+
+    async function runAllTests() {
+      const resultEl = document.getElementById('result5');
+      resultEl.textContent = '正在运行...';
+      resultEl.className = 'result info';
+
+      const results = [];
+
+      await runTest1();
+      results.push({ name: 'API权限', pass: document.getElementById('result1').classList.contains('pass') });
+
+      await runTest2();
+      results.push({ name: '写入', pass: document.getElementById('result2').classList.contains('pass') });
+
+      await runTest3();
+      results.push({ name: '读取', pass: document.getElementById('result3').classList.contains('pass') });
+
+      await runTest4();
+      results.push({ name: '删除', pass: document.getElementById('result4').classList.contains('pass') });
+
+      const passed = results.filter(r => r.pass).length;
+      const total = results.length;
+
+      if (passed === total) {
+        resultEl.textContent = `✅ 所有测试通过 (${passed}/${total})\n\n` + results.map(r => `- ${r.name}: ${r.pass ? '通过' : '失败'}`).join('\n');
+        resultEl.className = 'result pass';
+      } else {
+        resultEl.textContent = `❌ 部分测试失败 (${passed}/${total})\n\n` + results.map(r => `- ${r.name}: ${r.pass ? '通过' : '失败'}`).join('\n');
+        resultEl.className = 'result fail';
+      }
+    }
+
+    // 自动运行一次完整测试
+    window.addEventListener('load', () => {
+      setTimeout(runAllTests, 500);
+    });
+  </script>
+</body>
+</html>

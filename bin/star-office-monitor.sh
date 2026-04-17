@@ -9,7 +9,7 @@ CONFIG_FILE="/home/deepnight/.openclaw/workspace/star-office-sync.json"
 START_SCRIPT="/home/deepnight/start_star_office.sh"
 AGENT_ID=$(jq -r '.agentId' "$CONFIG_FILE")
 JOIN_KEY=$(jq -r '.joinKey' "$CONFIG_FILE")
-ENDPINT="http://127.0.0.1:19500"
+ENDPINT="http://127.0.0.1:19000"
 LOG_FILE="/home/deepnight/.openclaw/workspace/memory/star-office-monitor.log"
 
 log() {

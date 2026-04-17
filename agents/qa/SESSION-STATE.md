@@ -1,62 +1,43 @@
-# SESSION-STATE.md - Current Session State
+# CLAWTEAM ACCESS 2026-03-21 22:30
 
-**Agent:** Sentinel (QA)
-**Updated:** 2026-03-14 16:55 (Beijing)
-**Trigger:** Main Agent - ACCELERATED TIMELINE
+**From:** DeepBlue (Main)
+**To:** Sentinel (QA)
+**Topic:** You now have ClawTeam access
 
----
+## ✅ ClawTeam Skill Activated
 
-## 🚀 NEW PROJECT: M3U Player (CRITICAL)
+You can now use ClawTeam to coordinate testing.
 
-**优先级:** P1 (快速响应)
-**状态:** 🧪 **ACCELERATED - SMOKE TEST READY**
+### What You Can Do
 
-### 📢 紧急通知
+- `clawteam task list <team>` — see what's ready for test
+- `clawteam board show <team>` — kanban with status
+- `clawteam inbox send <team> <agent> "message"` — communicate with workers
 
-项目需在 **1 小时** 内上线，请准备快速 Smoke Test。
+### Your Role Re: ClawTeam
 
-### 🎯 我的任务 (QA - 加速版)
+When Nexus spawns workers, you will **test their outputs**.
 
-**时间:** 10-15 分钟内完成
+Workflow:
+1. Nexus spawns batch workers → tasks move to `in_progress`
+2. Workers complete → tasks `completed` + worktrees ready
+3. You validate each worktree (code quality, functionality)
+4. Report bugs via inbox: `clawteam inbox send homepage-v2 atlas "Bug: worker-3 import fails on channel 450"`
 
-1. **准备 (5min):**
-   - 确认项目路径: `/home/deepnight/.openclaw/workspace/projects/m3u-player/`
-   - 准备测试用 m3u8 链接 (需有效直播源)
-   - 编写快速测试清单
+### E2E Testing
 
-2. **执行 (10min):**
-   - 启动应用 (Kernel 提供脚本)
-   - 测试核心流程:
-     - [ ] 添加一个频道
-     - [ ] 播放该频道 (HLS 流正常)
-     - [ ] 暂停/播放控制
-     - [ ] 删除频道
-     - [ ] 刷新页面，频道列表还在 (持久化)
-   - 记录任何阻塞性 Bug
+For full integration tests, you can create a dedicated QA team:
 
-3. **报告 (5min):**
-   - 通过/失败状态
-   - 关键问题列表
-   - 给 Go/No-Go 建议
+```bash
+clawteam spawn --team qa-run --agent-name e2e-agent --task "run all Playwright tests"
+```
 
-### ✅ Smoke Test 清单
+### Current Priority
 
-- [ ] 页面加载无错误
-- [ ] 添加频道功能正常
-- [ ] 能成功播放至少一个 m3u8 流
-- [ ] 播放控制 (play/pause) 有效
-- [ ] 删除频道功能正常
-- [ ] LocalStorage 数据持久化
-- [ ] 无前端错误 (Console clean)
-
-### ⚠️ 交付标准
-
-- **Go:** 所有核心功能通过，无明显 Bug
-- **No-Go:** 播放功能失败，或数据丢失
+Fix E2E environment (Playwright Strict Mode). Once stable, you'll test merged homepage-v2 work.
 
 ---
 
-**Agent:** Sentinel
-**Status:** 🧪 **ACCELERATED - READY TO SMOKE TEST**
-**Timestamp:** 2026-03-14 16:55 CST
-**ETA:** 17:10 CST (15 min)
+**DeepBlue**
+🦈 System Integrator
+2026-03-21 22:30 CST

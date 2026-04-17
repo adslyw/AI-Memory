@@ -1,71 +1,73 @@
-# Proactive Ideas - 主动惊喜想法
+# Proactive Ideas
 
-> 记录能让人惊喜的、未被明确请求但极具价值的想法
+> What could I build RIGHT NOW that would make my human say "I didn't ask for that but it's amazing"?
 
-## 2026-03-11 心跳检查发现
+## 2026-03-26
 
-### 立即行动项
-- [ ] **项目状态自动报告** - 为主人生成一键式「待办事项 Web 应用」完整状态报告（包括各 agent 进度、阻塞、下一步）
-- [ ] **Star Office 健康监控** - 实现自动监控脚本，每 5 分钟检查服务，失败自动重启并通知
-- [ ] **PM 激活确认机制** - 创建任务分配确认闭环，确保 Oliver 始终在线协调
+**Idea: AppleSite 自动健康检查器**
 
-### 潜在惊喜想法
-- [ ] **每日自动化简报** - 每天早上 8:00 自动生成项目进展、关键指标、风险预警，Telegram/邮件推送
-- [ ] **技能使用分析** - 统计各 agent 技能使用频率，识别能力瓶颈，推荐优化方向
-- [ ] **代码质量自动化** - 为 Forge 的代码自动运行 lint + 测试覆盖率，生成质量报告
-- [ ] **Star Office 看板增强** - 在看板显示项目进度百分比、预计完成时间、阻塞原因标签
-- [ ] **知识同步优化** - 为同步过程添加变更摘要，让人一眼看到「今天发生了什么」
+- **Problem:** AppleSite 可能因为域名失效、API挂掉等原因变成无效站点，但管理员无法实时知道。
+- **Solution:** 创建一个后台定时任务（django-background-tasks），每天检查所有启用的 AppleSite 的 API 可达性。对连续失败 N 次的站点自动禁用，并在 Admin 首页显示警告，同时发送飞书消息通知。
+- **Delight factor:** 零维护成本，系统自愈能力，防止无效资源站影响用户体验。
+- **Implementation effort:** ~2 hours (add model for health tracking, periodic task, admin dashboard widget, feishu notification)
+- **Potential extension:** 结合 Star Office 状态同步，在看板上显示站点健康指数。
 
----
+**其他构想：**
+- TVBox 配置一键导出（包含所有站点最新分类）
+- 资源访问量统计仪表盘（基于 request logs）
+- 自动封面图抓取（针对自定义 CMS）
 
-## 2026-03-19 心跳新增 (Early Morning)
+## 2026-04-10
 
-### M3U Player Automated Backup System
-**Context:** M3U Player running 45h+ with persistent SQLite database in `./data/m3u-player.db`. No backup mechanism in place. Risk: data loss from disk corruption, accidental deletion, or container failure.
-**Idea:** Daily automated backup with rotation:
-- Tarball of `data/` directory (or just the DB) to `backups/` with timestamp
-- Keep last 7 days, prune older
-- Optional: upload to remote (S3/Google Drive) if credentials available
-- Log backup successes/failures to `memory/backup.log`
-- Add to crontab: `0 2 * * * /home/deepnight/.openclaw/workspace/scripts/backup-m3u-player.sh`
-**Impact:** Data safety, peace of mind, easy restore if needed
-**Effort:** 30 minutes (script + rotation + logging)
-**Priority:** Medium (prevent data loss, M3U Player is active project)
-**Considerations:** Needs approval for crontab modification; local backup first, remote optional
+**Idea: Homepage_v2 空媒体资源自动修复工具**
 
----
+- **Problem:** 在 `homepage_v2` 项目中发现了 928 条 `resource_type='media'` 且 `resource_url` 和 `poster` 为空的 Page 记录，涉及 71 个不同域名。这些记录无法在 `player.m3u` API 中正常显示。
+- **Solution:** 开发一个自动化脚本，按域名对空资源进行分组，针对每个已配置的 `AppleSite` 调用 API 获取缺失的 `resource_url` 和 `poster` 信息，并批量更新数据库。
+- **Delight factor:** 自动化数据修复，减少人工干预，提高数据完整性。
+- **Implementation effort:** ~3-4 小时（分析域名映射、编写站点特定 API 调用逻辑、批量更新数据库）
+- **Bonus:** 可扩展到其他类似的数据修复任务。
 
-## 评估标准
-- 是否解决真实痛点？
-- 是否能自动化？
-- 是否可衡量价值？
-- 是否需要外部批准？
+## 2026-04-11
 
----
+**Idea: M3U Player Electron 自动构建和发布流水线**
 
-## 2026-03-17 心跳新增
+- **Problem:** M3U Player Electron 应用已经开发完成，但每次更新都需要手动构建和发布，缺乏自动化流程。
+- **Solution:** 创建 GitHub Actions 工作流，实现自动构建、测试和发布 Electron 应用到多个平台（Windows、macOS、Linux）。
+- **Delight factor:** 一键发布，自动构建，减少手动操作，提高发布效率。
+- **Implementation effort:** ~2-3 小时（配置 GitHub Actions、构建脚本、发布流程）
+- **Bonus:** 支持自动更新（electron-updater），用户可自动获取新版本。
 
-### Star Office Auto-Recovery Daemon
-**Context:** This morning's service outage + recurring ~30min auth expiry requiring manual refresh
-**Idea:** Bash daemon with 2-minute health check loop:
-- `curl -s http://127.0.0.1:19500/agents` fails → restart via `/home/deepnight/start_star_office.sh`
-- DeepBlue auth status "offline" → auto-push presence
-- All actions logged to `memory/star-office-monitor.log`
-**Impact:** Zero-downtime dashboard, no manual intervention needed
-**Effort:** 30 minutes (bash script + install as systemd/cron)
-**Priority:** High (reliability improvement)
-**Observed TTL:** Auth expires ~30 minutes (2026-03-17 heartbeat checks)
+## 2026-04-11
 
----
+**Idea: M3U Player Electron 自动构建和发布流水线**
 
-## 2026-03-17 心跳新增
+- **Problem:** M3U Player Electron 应用已经开发完成，但每次更新都需要手动构建和发布，缺乏自动化流程。
+- **Solution:** 创建 GitHub Actions 工作流，实现自动构建、测试和发布 Electron 应用到多个平台（Windows、macOS、Linux）。
+- **Delight factor:** 一键发布，自动构建，减少手动操作，提高发布效率。
+- **Implementation effort:** ~2-3 小时（配置 GitHub Actions、构建脚本、发布流程）
+- **Bonus:** 支持自动更新（electron-updater），用户可自动获取新版本。
 
-### Ready-State Project Acceleration
-**Context:** Team idle, infrastructure tested, no active project
-**Idea:** Build a "Project Kickoff Framework" to accelerate next assignment by 1-2 days:
-- Project template: docs/ (README, API spec), src/ (base structure with Docker), tests/ (E2E scaffold), docker-compose.yml (multi-service ready)
-- Oliver's task decomposition utility: CLI that takes plain requirements and outputs structured task breakdown with agent assignments
-- CI/CD templates: GitHub Actions for lint, test, build, deploy (Docker + Nginx)
-**Impact:** Reduces setup friction, ensures consistency, enables faster delivery
-**Effort:** 2-3 hours to create solid templates
-**Priority:** Medium (use time when waiting for next project)
+## 2026-04-12
+
+**Idea: M3U Player 桌面应用增强功能**
+
+- **Problem:** 当前 M3U Player 桌面应用功能基本完整，但缺乏一些提升用户体验的增强功能。
+- **Solution:** 添加以下增强功能：
+  - 系统托盘右键菜单（显示窗口、退出、设置）
+  - 快捷键支持（全局快捷键打开应用、播放/暂停）
+  - 自动更新检查（在后台定期检查新版本）
+  - 播放历史记录（记录最近播放的频道）
+  - 皮肤主题切换（支持多种配色主题）
+- **Delight factor:** 提升桌面应用的用户体验，更接近原生应用的使用习惯。
+- **Implementation effort:** ~4-5 小时（实现托盘菜单、快捷键、自动更新、历史记录功能）
+- **Bonus:** 添加设置界面，支持用户自定义配置。
+
+## 2026-03-26 (2)
+
+**Idea: AppleCategory 变更即时通知**
+
+- **Problem:** 分类数据同步完成后，管理员不知道何时更新、更新了多少，需要手动查看。
+- **Solution:** 在 `AppleCategorySyncService.sync` 完成后，通过飞书 Bot 发送通知到管理群。消息包括：站点名、同步时间、新增/更新/删除的分类数量。可配置通知阈值（如仅当变化 > 5 时发送）。
+- **Delight factor:** 信息透明，及时发现数据异常，减少管理盲区。
+- **Implementation effort:** ~1 hour (integrate feishu messaging, add summary stats to sync result, hook into task completion signal).
+- **Bonus:** 在 Admin 列表中显示"最后同步时间"-column.

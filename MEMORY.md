@@ -20,3 +20,11 @@ Your curated knowledge base. Add entries here to make them persistent.
 - **Knowledge Extraction Process:** Automated extraction from reflection-based memory has limited value for technical knowledge. Structured documentation separate from reflective memory is necessary for actionable insights and reproducible learning.
 
 - **Interconnected Knowledge Networks:** Wide reflection across memory (125+ memories) shows how knowledge is interconnected. Themes wander through memory space, creating associative learning paths that can be leveraged for deeper understanding.
+
+- **Proactive Agent Configuration (2026-04-17):** Successfully installed and configured Proactive Agent v3.1.0 with complete onboarding. Key learnings:
+  - WAL protocol implementation through SESSION-STATE.md and working-buffer.md prevents context loss
+  - 12-question onboarding flow covers all core configuration needs
+  - Recommended file structure includes: USER.md, SOUL.md, MEMORY.md, SESSION-STATE.md, and notes/areas/ subdirectories
+  - Need to frequently write session state to avoid losing context
+  - Regular health checks via `openclaw doctor` recommended
+  - Cron tasks can automate maintenance operations
